@@ -44,7 +44,23 @@ func init() {
 	}
 }
 
+func movePlayer() {
+	if ebiten.IsKeyPressed(ebiten.KeyUp) {
+		player.yPos -= player.speed
+	}
+	if ebiten.IsKeyPressed(ebiten.KeyDown) {
+		player.yPos += player.speed
+	}
+	if ebiten.IsKeyPressed(ebiten.KeyLeft) {
+		player.xPos -= player.speed
+	}
+	if ebiten.IsKeyPressed(ebiten.KeyRight) {
+		player.xPos += player.speed
+	}
+}
+
 func update(screen *ebiten.Image) error {
+	movePlayer()
 	if ebiten.IsDrawingSkipped() {
 		return nil
 	}

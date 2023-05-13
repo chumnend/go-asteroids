@@ -25,7 +25,3 @@ make
 
 ## Contact
 Nicholas Chumney - [nicholas.chumney@outlook.com](nicholas.chumney@outlook.com)
-
-
-## Acknowledgements
-[2D Game Development in Golang](https://medium.com/@chrisandrews_76960/2d-game-development-in-golang-part-1-5e2c11a513ed)
