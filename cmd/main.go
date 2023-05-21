@@ -19,6 +19,8 @@ const (
 	SCALE         = 2
 	WINDOW_WIDTH  = SCREEN_WIDTH * SCALE
 	WINDOW_HEIGHT = SCREEN_HEIGHT * SCALE
+	SPRITE_SIZE   = 16
+	GROUND_HEIGHT = 180
 )
 
 var (
@@ -66,6 +68,28 @@ func main() {
 	}
 }
 
+type Player struct {
+	x  int
+	y  int
+	vx int
+	vy int
+}
+
+func (p *Player) Draw(screen *ebiten.Image) {
+	s := idleSprite
+	switch {
+	case p.vx > 0:
+		s = rightSprite
+	case p.vx < 0:
+		s = leftSprite
+	}
+
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Scale(0.2, 0.2)
+	op.GeoM.Translate(float64(p.x)/SPRITE_SIZE, float64(p.y)/SPRITE_SIZE)
+	screen.DrawImage(s, op)
+}
+
 type GameState int
 
 const (
@@ -74,10 +98,15 @@ const (
 )
 
 type Game struct {
-	state GameState
+	state  GameState
+	player *Player
 }
 
 func (g *Game) Update() error {
+	if g.player == nil {
+		g.player = &Player{x: 50 * SPRITE_SIZE, y: GROUND_HEIGHT * SPRITE_SIZE}
+	}
+
 	switch g.state {
 	case GameStateMenu:
 		if inpututil.IsKeyJustPressed(ebiten.KeyZ) {
@@ -97,10 +126,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	screen.DrawImage(backgroundImage, nil)
 
 	// draw gopher
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Scale(0.2, 0.2)
-	op.GeoM.Translate(SCREEN_WIDTH/2, SCREEN_WIDTH/2)
-	screen.DrawImage(idleSprite, op)
+	g.player.Draw(screen)
 
 	// debug message
 	ebitenutil.DebugPrint(screen, "Current state: "+strconv.Itoa(int(g.state)))
