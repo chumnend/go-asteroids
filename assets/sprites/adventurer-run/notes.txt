@@ -1,0 +1,5 @@
+Sprite Size: 50x37
+
+Sprites created by rvros
+
+https://rvros.itch.io/animated-pixel-hero

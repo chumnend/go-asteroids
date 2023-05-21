@@ -50,7 +50,7 @@ func init() {
 	}
 	idleSprite = ebiten.NewImageFromImage(img)
 
-	backgroundImage, _, err = ebitenutil.NewImageFromFile("assets/bg_320x256.png")
+	backgroundImage, _, err = ebitenutil.NewImageFromFile("assets/backgrounds/bg_320x256.png")
 	if err != nil {
 		log.Fatal(err)
 	}
