@@ -1,7 +1,7 @@
-# Gophy Runner
+# Gunthur
 
 ## About the Project
-This folder is meant to hold a bunch of code snippets written in Go
+A 2D hack-and-slash game made in Golang with Ebiten
 
 ### Demo 
 TBD
