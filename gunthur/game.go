@@ -1,7 +1,6 @@
 package gunthur
 
 import (
-	"image"
 	"log"
 	"strconv"
 
@@ -19,12 +18,6 @@ const (
 	screenWidth  = 320
 	screenHeight = 256
 	scale        = 2
-
-	frameOX     = 50
-	frameOY     = 37
-	frameWidth  = 50
-	frameHeight = 37
-	frameCount  = 6
 
 	WindowWidth  = screenWidth * scale
 	WindowHeight = screenHeight * scale
@@ -75,14 +68,7 @@ func (g *Game) Update() error {
 
 func (g *Game) Draw(screen *ebiten.Image) {
 	screen.DrawImage(backgroundImage, nil)
-
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(-float64(frameWidth)/2, -float64(frameHeight)/2)
-	op.GeoM.Translate(screenWidth/2, screenHeight/2)
-	i := (g.count / 5) % frameCount
-	sx, sy := frameOX+i*frameWidth, frameOY
-	screen.DrawImage(playerImage.SubImage(image.Rect(sx, sy, sx+frameWidth, sy+frameHeight)).(*ebiten.Image), op)
-
+	drawAnimation(screen, playerImage, 50, 37, 50, 37, 6, g.count)
 	// debug message
 	ebitenutil.DebugPrint(screen, "Current state: "+strconv.Itoa(int(g.state)))
 }
