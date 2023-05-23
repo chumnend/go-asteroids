@@ -1,56 +1,44 @@
 package gunthur
 
 import (
-	"bytes"
 	"image"
 	"log"
 	"strconv"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
-	rplatformer "github.com/hajimehoshi/ebiten/v2/examples/resources/images/platformer"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 var (
-	leftSprite      *ebiten.Image
-	rightSprite     *ebiten.Image
-	idleSprite      *ebiten.Image
+	playerImage     *ebiten.Image
 	backgroundImage *ebiten.Image
 )
 
 const (
-	// game settings
-	SCREEN_WIDTH  = 320
-	SCREEN_HEIGHT = 256
-	SCALE         = 2
-	WINDOW_WIDTH  = SCREEN_WIDTH * SCALE
-	WINDOW_HEIGHT = SCREEN_HEIGHT * SCALE
-	SPRITE_SIZE   = 16
-	GROUND_HEIGHT = 180
+	screenWidth  = 320
+	screenHeight = 256
+	scale        = 2
+
+	frameOX     = 50
+	frameOY     = 37
+	frameWidth  = 50
+	frameHeight = 37
+	frameCount  = 6
+
+	WindowWidth  = screenWidth * scale
+	WindowHeight = screenHeight * scale
 )
 
 func init() {
-	// preload images
-	img, _, err := image.Decode(bytes.NewReader(rplatformer.Right_png))
-	if err != nil {
-		panic(err)
-	}
-	rightSprite = ebiten.NewImageFromImage(img)
-
-	img, _, err = image.Decode(bytes.NewReader(rplatformer.Left_png))
-	if err != nil {
-		panic(err)
-	}
-	leftSprite = ebiten.NewImageFromImage(img)
-
-	img, _, err = image.Decode(bytes.NewReader(rplatformer.MainChar_png))
-	if err != nil {
-		panic(err)
-	}
-	idleSprite = ebiten.NewImageFromImage(img)
+	var err error
 
 	backgroundImage, _, err = ebitenutil.NewImageFromFile("assets/backgrounds/bg_320x256.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	playerImage, _, err = ebitenutil.NewImageFromFile("assets/sprites/adventurer/adventurer-sheet.png")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -64,14 +52,12 @@ const (
 )
 
 type Game struct {
-	state  GameState
-	player *Player
+	count int
+	state GameState
 }
 
 func (g *Game) Update() error {
-	if g.player == nil {
-		g.player = &Player{x: 50 * SPRITE_SIZE, y: GROUND_HEIGHT * SPRITE_SIZE}
-	}
+	g.count++
 
 	switch g.state {
 	case GameStateMenu:
@@ -88,16 +74,19 @@ func (g *Game) Update() error {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	// draw background
 	screen.DrawImage(backgroundImage, nil)
 
-	// draw gopher
-	g.player.Draw(screen)
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(-float64(frameWidth)/2, -float64(frameHeight)/2)
+	op.GeoM.Translate(screenWidth/2, screenHeight/2)
+	i := (g.count / 5) % frameCount
+	sx, sy := frameOX+i*frameWidth, frameOY
+	screen.DrawImage(playerImage.SubImage(image.Rect(sx, sy, sx+frameWidth, sy+frameHeight)).(*ebiten.Image), op)
 
 	// debug message
 	ebitenutil.DebugPrint(screen, "Current state: "+strconv.Itoa(int(g.state)))
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
-	return SCREEN_WIDTH, SCREEN_HEIGHT
+	return screenWidth, screenHeight
 }
