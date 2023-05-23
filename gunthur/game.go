@@ -1,17 +1,11 @@
 package gunthur
 
 import (
-	"log"
 	"strconv"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
-)
-
-var (
-	playerImage     *ebiten.Image
-	backgroundImage *ebiten.Image
 )
 
 const (
@@ -23,20 +17,6 @@ const (
 	WindowHeight = screenHeight * scale
 )
 
-func init() {
-	var err error
-
-	backgroundImage, _, err = ebitenutil.NewImageFromFile("assets/backgrounds/bg_320x256.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	playerImage, _, err = ebitenutil.NewImageFromFile("assets/sprites/adventurer/adventurer-sheet.png")
-	if err != nil {
-		log.Fatal(err)
-	}
-}
-
 type GameState int
 
 const (
@@ -47,6 +27,20 @@ const (
 type Game struct {
 	count int
 	state GameState
+
+	player     *Player
+	background *ebiten.Image
+}
+
+func (g *Game) Init() error {
+	var err error
+	g.background, _, err = ebitenutil.NewImageFromFile("assets/backgrounds/bg_320x256.png")
+	if err != nil {
+		return err
+	}
+	g.player = NewPlayer()
+
+	return nil
 }
 
 func (g *Game) Update() error {
@@ -67,8 +61,10 @@ func (g *Game) Update() error {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	screen.DrawImage(backgroundImage, nil)
-	drawAnimation(screen, playerImage, 50, 37, 50, 37, 6, g.count)
+	screen.DrawImage(g.background, nil)
+
+	g.player.drawRunAninmation(screen, 50, 37, 50, 37, 6, g.count)
+
 	// debug message
 	ebitenutil.DebugPrint(screen, "Current state: "+strconv.Itoa(int(g.state)))
 }

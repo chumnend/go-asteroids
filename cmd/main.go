@@ -8,6 +8,10 @@ import (
 
 func main() {
 	g := &gunthur.Game{}
+	if err := g.Init(); err != nil {
+		panic(err)
+	}
+
 	ebiten.SetWindowSize(gunthur.WindowWidth, gunthur.WindowHeight)
 	ebiten.SetWindowTitle("Gunthur: Hack & Slash")
 	ebiten.SetWindowResizable(false)
