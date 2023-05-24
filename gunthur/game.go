@@ -28,7 +28,10 @@ type Game struct {
 	count int
 	state GameState
 
-	player     *Player
+	player1 *Player
+	player2 *Player
+	player3 *Player
+
 	background *ebiten.Image
 }
 
@@ -38,7 +41,10 @@ func (g *Game) Init() error {
 	if err != nil {
 		return err
 	}
-	g.player = NewPlayer()
+
+	g.player1 = NewPlayer(50, 100)
+	g.player2 = NewPlayer(100, 100)
+	g.player3 = NewPlayer(150, 100)
 
 	return nil
 }
@@ -63,10 +69,12 @@ func (g *Game) Update() error {
 func (g *Game) Draw(screen *ebiten.Image) {
 	screen.DrawImage(g.background, nil)
 
-	g.player.drawRunAninmation(screen, 50, 37, 50, 37, 6, g.count)
+	g.player1.idle(screen, g.count)
+	g.player2.runRight(screen, g.count)
+	g.player3.jump(screen, g.count)
 
 	// debug message
-	ebitenutil.DebugPrint(screen, "Current state: "+strconv.Itoa(int(g.state)))
+	ebitenutil.DebugPrint(screen, "Current state: "+strconv.Itoa(int(g.state))+" Frame: "+strconv.Itoa(int(g.count)))
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
