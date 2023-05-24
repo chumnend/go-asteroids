@@ -25,13 +25,9 @@ const (
 )
 
 type Game struct {
-	count int
-	state GameState
-
-	player1 *Player
-	player2 *Player
-	player3 *Player
-
+	count      int
+	state      GameState
+	player     *Player
 	background *ebiten.Image
 }
 
@@ -42,9 +38,7 @@ func (g *Game) Init() error {
 		return err
 	}
 
-	g.player1 = NewPlayer(50, 100)
-	g.player2 = NewPlayer(100, 100)
-	g.player3 = NewPlayer(150, 100)
+	g.player = NewPlayer(screenWidth/2, screenHeight/2)
 
 	return nil
 }
@@ -54,12 +48,20 @@ func (g *Game) Update() error {
 
 	switch g.state {
 	case GameStateMenu:
-		if inpututil.IsKeyJustPressed(ebiten.KeyZ) {
+		if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
 			g.state = GameStatePlaying
 		}
 	case GameStatePlaying:
-		if inpututil.IsKeyJustPressed(ebiten.KeyZ) {
-			g.state = GameStateMenu
+		if inpututil.IsKeyJustPressed(ebiten.KeyArrowUp) {
+			g.player.state = PlayerStateJumping
+		} else if inpututil.IsKeyJustPressed(ebiten.KeyArrowDown) {
+			g.player.state = PlayerStateCrouch
+		} else if inpututil.IsKeyJustPressed(ebiten.KeyArrowRight) {
+			g.player.state = PlayerStateRunRight
+		} else if inpututil.IsKeyJustPressed(ebiten.KeyArrowLeft) {
+			g.player.state = PlayerStateRunLeft
+		} else if inpututil.IsKeyJustReleased(ebiten.KeyArrowLeft) || inpututil.IsKeyJustReleased(ebiten.KeyArrowRight) || inpututil.IsKeyJustReleased(ebiten.KeyArrowUp) || inpututil.IsKeyJustReleased(ebiten.KeyArrowDown) {
+			g.player.state = PlayerStateIdle
 		}
 	}
 
@@ -69,9 +71,7 @@ func (g *Game) Update() error {
 func (g *Game) Draw(screen *ebiten.Image) {
 	screen.DrawImage(g.background, nil)
 
-	g.player1.idle(screen, g.count)
-	g.player2.runRight(screen, g.count)
-	g.player3.jump(screen, g.count)
+	g.player.draw(screen, g.count)
 
 	// debug message
 	ebitenutil.DebugPrint(screen, "Current state: "+strconv.Itoa(int(g.state))+" Frame: "+strconv.Itoa(int(g.count)))
