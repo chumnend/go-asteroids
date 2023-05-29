@@ -1,8 +1,6 @@
 package gunthur
 
 import (
-	"strconv"
-
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
@@ -10,7 +8,7 @@ import (
 
 const (
 	screenWidth  = 320
-	screenHeight = 256
+	screenHeight = 240
 	scale        = 2
 
 	WindowWidth  = screenWidth * scale
@@ -25,22 +23,23 @@ const (
 )
 
 type Game struct {
-	count      int
-	state      GameState
-	player     *Player
-	background *ebiten.Image
+	count  int
+	state  GameState
+	player *Sprite
 }
 
-func (g *Game) Init() error {
-	var err error
-	g.background, _, err = ebitenutil.NewImageFromFile("assets/backgrounds/bg_320x256.png")
-	if err != nil {
-		return err
-	}
-
-	g.player = NewPlayer(screenWidth/2, screenHeight/2)
-
-	return nil
+func NewGame() *Game {
+	g := &Game{}
+	g.state = GameStatePlaying
+	playerSpritesheet := NewSpritesheet("./assets/sprites/adventurer/adventurer-sheet.png", 50, 37)
+	g.player = NewSprite(playerSpritesheet)
+	g.player.AddAnimation("idle", 1200, 0, 0, 4, false, false)
+	g.player.AddAnimation("runRight", 1000, 50, 37, 6, false, false)
+	g.player.AddAnimation("runLeft", 1000, 50, 37, 6, false, true)
+	g.player.AddAnimation("jump", 600, 0, 74, 10, false, false)
+	g.player.AddAnimation("crouch", 1500, 200, 0, 4, false, false)
+	g.player.SetAnimation("idle")
+	return g
 }
 
 func (g *Game) Update() error {
@@ -53,15 +52,15 @@ func (g *Game) Update() error {
 		}
 	case GameStatePlaying:
 		if inpututil.IsKeyJustPressed(ebiten.KeyArrowUp) {
-			g.player.state = PlayerStateJumping
+			g.player.SetAnimation("jump")
 		} else if inpututil.IsKeyJustPressed(ebiten.KeyArrowDown) {
-			g.player.state = PlayerStateCrouch
+			g.player.SetAnimation("crouch")
 		} else if inpututil.IsKeyJustPressed(ebiten.KeyArrowRight) {
-			g.player.state = PlayerStateRunRight
+			g.player.SetAnimation("runRight")
 		} else if inpututil.IsKeyJustPressed(ebiten.KeyArrowLeft) {
-			g.player.state = PlayerStateRunLeft
+			g.player.SetAnimation("runLeft")
 		} else if inpututil.IsKeyJustReleased(ebiten.KeyArrowLeft) || inpututil.IsKeyJustReleased(ebiten.KeyArrowRight) || inpututil.IsKeyJustReleased(ebiten.KeyArrowUp) || inpututil.IsKeyJustReleased(ebiten.KeyArrowDown) {
-			g.player.state = PlayerStateIdle
+			g.player.SetAnimation("idle")
 		}
 	}
 
@@ -69,12 +68,8 @@ func (g *Game) Update() error {
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
-	screen.DrawImage(g.background, nil)
-
-	g.player.draw(screen, g.count)
-
-	// debug message
-	ebitenutil.DebugPrint(screen, "Current state: "+strconv.Itoa(int(g.state))+" Frame: "+strconv.Itoa(int(g.count)))
+	ebitenutil.DebugPrint(screen, "This is a test.")
+	g.player.Draw(screen, g.count)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {

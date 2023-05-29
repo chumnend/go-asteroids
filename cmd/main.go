@@ -2,20 +2,16 @@ package main
 
 import (
 	"gophy-runner/gunthur"
+	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 func main() {
-	g := &gunthur.Game{}
-	if err := g.Init(); err != nil {
-		panic(err)
-	}
-
+	game := gunthur.NewGame()
 	ebiten.SetWindowSize(gunthur.WindowWidth, gunthur.WindowHeight)
 	ebiten.SetWindowTitle("Gunthur: Hack & Slash")
-	ebiten.SetWindowResizable(false)
-	if err := ebiten.RunGame(g); err != nil {
-		panic(err)
+	if err := ebiten.RunGame(game); err != nil {
+		log.Fatal(err)
 	}
 }
