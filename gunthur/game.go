@@ -23,7 +23,6 @@ const (
 )
 
 type Game struct {
-	count  int
 	state  GameState
 	player *Sprite
 }
@@ -43,8 +42,6 @@ func NewGame() *Game {
 }
 
 func (g *Game) Update() error {
-	g.count++
-
 	switch g.state {
 	case GameStateMenu:
 		if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
@@ -69,7 +66,7 @@ func (g *Game) Update() error {
 
 func (g *Game) Draw(screen *ebiten.Image) {
 	ebitenutil.DebugPrint(screen, "This is a test.")
-	g.player.Draw(screen, g.count)
+	g.player.Draw(screen)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {

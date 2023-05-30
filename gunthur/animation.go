@@ -1,6 +1,8 @@
 package gunthur
 
-import "time"
+import (
+	"time"
+)
 
 // Animation represents info needed to render a Sprites animation
 type Animation struct {

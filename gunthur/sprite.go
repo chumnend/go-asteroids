@@ -2,6 +2,7 @@ package gunthur
 
 import (
 	"image"
+	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -9,6 +10,7 @@ import (
 // Sprite manages info related to a game image
 type Sprite struct {
 	currentAnimation string
+	startTime        time.Time
 
 	Spritesheet Spritesheet
 	Animations  map[string]*Animation
@@ -34,19 +36,18 @@ func (s *Sprite) AddAnimation(name string, duration int, startFrameX int, startF
 
 func (s *Sprite) SetAnimation(name string) {
 	s.currentAnimation = name
+	s.startTime = time.Now()
 }
 
-func (s *Sprite) Draw(screen *ebiten.Image, count int) {
+func (s *Sprite) Draw(screen *ebiten.Image) {
 	currentAnimation := s.Animations[s.currentAnimation]
-
-	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(float64(s.X), float64(s.Y))
-	if currentAnimation.MirrorY {
-		op.GeoM.Scale(-1, 1)
-		op.GeoM.Translate(float64(s.Spritesheet.GetWidth()-s.X), 0)
+	elapsedTime := float32(time.Since(s.startTime).Milliseconds())
+	oneStepDuration := currentAnimation.Duration.Milliseconds() / int64(currentAnimation.TotalFrames)
+	i := int(elapsedTime) / int(oneStepDuration)
+	if elapsedTime >= float32(currentAnimation.Duration.Milliseconds()) {
+		s.startTime = time.Now()
 	}
 
-	i := (count / currentAnimation.TotalFrames) % currentAnimation.TotalFrames
 	sx := currentAnimation.StartFrameX + i*s.Spritesheet.FrameWidth
 	sy := currentAnimation.StartFrameY
 	if sx >= s.Spritesheet.GetWidth() {
@@ -56,6 +57,13 @@ func (s *Sprite) Draw(screen *ebiten.Image, count int) {
 	}
 
 	img := s.Spritesheet.Image.SubImage(image.Rect(sx, sy, sx+s.Spritesheet.FrameWidth, sy+s.Spritesheet.FrameHeight)).(*ebiten.Image)
+
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(float64(s.X), float64(s.Y))
+	if currentAnimation.MirrorY {
+		op.GeoM.Scale(-1, 1)
+		op.GeoM.Translate(float64(s.Spritesheet.GetWidth()-s.X), 0)
+	}
 
 	screen.DrawImage(img, op)
 }
