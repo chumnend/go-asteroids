@@ -32,11 +32,11 @@ func NewGame() *Game {
 	g.state = GameStatePlaying
 	playerSpritesheet := NewSpritesheet("./assets/sprites/adventurer/adventurer-sheet.png", 50, 37)
 	g.player = NewSprite(playerSpritesheet)
-	g.player.AddAnimation("idle", 1200, 0, 0, 4, false, false)
+	g.player.AddAnimation("idle", 1000, 0, 0, 4, false, false)
 	g.player.AddAnimation("runRight", 1000, 50, 37, 6, false, false)
 	g.player.AddAnimation("runLeft", 1000, 50, 37, 6, false, true)
-	g.player.AddAnimation("jump", 600, 0, 74, 10, false, false)
-	g.player.AddAnimation("crouch", 1500, 200, 0, 4, false, false)
+	g.player.AddAnimation("jump", 1500, 0, 74, 10, false, false)
+	g.player.AddAnimation("crouch", 1000, 200, 0, 4, false, false)
 	g.player.SetAnimation("idle")
 	return g
 }
