@@ -11,7 +11,7 @@ TBD
 - [Ebitengine](https://ebitengine.org/) 1.12.12 
 
 ## Getting Started
-1) Before getting started visit the [Ebitengine Installation Guide](https://ebitengine.org/en/documents/install.html) and make sure you have all the dependencies on your machine.
+1) Before getting started visit the [Ebitengine Installation Guide](https://ebitengine.org/en/documents/install.html) and make sure you have all the dependencies on your machine. You will require Go 1.18+ and a C Compiler for your machine.
 
 2) Setup this go project
 ```
