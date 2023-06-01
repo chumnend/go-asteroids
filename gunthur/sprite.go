@@ -2,10 +2,40 @@ package gunthur
 
 import (
 	"image"
+	"log"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
+
+// Spritesheet represents the spritesheet containg the sprite images
+type Spritesheet struct {
+	Image       *ebiten.Image
+	FrameWidth  int
+	FrameHeight int
+}
+
+func NewSpritesheet(path string, frameWidth int, frameHeight int) *Spritesheet {
+	img, _, err := ebitenutil.NewImageFromFile(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return &Spritesheet{
+		Image:       img,
+		FrameWidth:  frameWidth,
+		FrameHeight: frameHeight,
+	}
+}
+
+func (s *Spritesheet) GetWidth() int {
+	return s.Image.Bounds().Dx()
+}
+
+func (s *Spritesheet) GetHeight() int {
+	return s.Image.Bounds().Dy()
+}
 
 // Animation represents info needed to render a Sprites animation
 type Animation struct {
@@ -56,8 +86,10 @@ func (s *Sprite) AddAnimation(name string, duration int, startFrameX int, startF
 }
 
 func (s *Sprite) SetAnimation(name string) {
-	s.currentAnimation = name
-	s.startTime = time.Now()
+	if s.currentAnimation != name {
+		s.currentAnimation = name
+		s.startTime = time.Now()
+	}
 }
 
 func (s *Sprite) Draw(screen *ebiten.Image) {

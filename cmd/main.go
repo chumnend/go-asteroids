@@ -7,11 +7,20 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
+const (
+	screenWidth  = 320
+	screenHeight = 240
+)
+
 func main() {
-	game := gunthur.NewGame()
-	ebiten.SetWindowSize(gunthur.WindowWidth, gunthur.WindowHeight)
+	g := gunthur.NewGame(screenWidth, screenHeight)
+	if err := g.Init(); err != nil {
+		log.Fatal(err)
+	}
+
+	ebiten.SetWindowSize(screenWidth*2, screenHeight*2)
 	ebiten.SetWindowTitle("Gunthur: Hack & Slash")
-	if err := ebiten.RunGame(game); err != nil {
+	if err := ebiten.RunGame(g); err != nil {
 		log.Fatal(err)
 	}
 }
