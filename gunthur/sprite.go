@@ -16,6 +16,8 @@ type Sprite struct {
 	Animations  map[string]*Animation
 	X           int
 	Y           int
+	Vx          int
+	Vy          int
 }
 
 // New Sprite returns a Sprite struct
@@ -26,6 +28,8 @@ func NewSprite(spritesheet *Spritesheet) *Sprite {
 		Animations:       make(map[string]*Animation),
 		X:                100,
 		Y:                100,
+		Vx:               0,
+		Vy:               0,
 	}
 }
 
@@ -39,6 +43,21 @@ func (s *Sprite) SetAnimation(name string) {
 		s.currentAnimation = name
 		s.startTime = time.Now()
 	}
+}
+
+func (s *Sprite) MoveTo(x int, y int) {
+	s.X = x
+	s.Y = y
+}
+
+func (s *Sprite) SetSpeed(vx int, vy int) {
+	s.Vx = vx
+	s.Vy = vy
+}
+
+func (s *Sprite) UpdatePosition() {
+	s.X += s.Vx
+	s.Y += s.Vy
 }
 
 func (s *Sprite) Draw(screen *ebiten.Image) {
@@ -61,11 +80,16 @@ func (s *Sprite) Draw(screen *ebiten.Image) {
 	img := s.Spritesheet.Image.SubImage(image.Rect(sx, sy, sx+s.Spritesheet.FrameWidth, sy+s.Spritesheet.FrameHeight)).(*ebiten.Image)
 
 	op := &ebiten.DrawImageOptions{}
-	op.GeoM.Translate(float64(s.X), float64(s.Y))
+	scaleX := 1.
+	scaleY := 1.
+	offsetX := float64(s.X)
+	offsetY := float64(s.Y)
 	if currentAnimation.MirrorY {
-		op.GeoM.Scale(-1, 1)
-		op.GeoM.Translate(float64(s.Spritesheet.GetWidth()-s.X), 0)
+		scaleX = -1
+		offsetX += float64(s.Spritesheet.FrameWidth)
 	}
+	op.GeoM.Scale(scaleX, scaleY)
+	op.GeoM.Translate(offsetX, offsetY)
 
 	screen.DrawImage(img, op)
 }

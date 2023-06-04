@@ -49,20 +49,24 @@ func (g *Game) Init() error {
 }
 
 func (g *Game) Update() error {
-	// timeDelta := float64(time.Since(prevUpdateTime))
-	prevUpdateTime = time.Now()
+	switch g.state {
+	case GameStateMenu:
+		if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
+			g.state = GameStatePlaying
+		}
+	case GameStatePlaying:
+		g.player.UpdatePosition()
 
-	g.pressedKeys = inpututil.AppendPressedKeys(g.pressedKeys[:0])
-	for _, key := range g.pressedKeys {
-		switch key.String() {
-		case "ArrowDown":
-			g.player.SetAnimation("crouch")
-		case "ArrowUp":
+		if inpututil.IsKeyJustPressed(ebiten.KeyArrowUp) {
 			g.player.SetAnimation("jump")
-		case "ArrowRight":
-			g.player.SetAnimation("runRight")
-		case "ArrowLeft":
+		} else if inpututil.IsKeyJustPressed(ebiten.KeyArrowDown) {
+			g.player.SetAnimation("crouch")
+		} else if inpututil.IsKeyJustPressed(ebiten.KeyArrowLeft) {
 			g.player.SetAnimation("runLeft")
+			g.player.SetSpeed(-2, 0)
+		} else if inpututil.IsKeyJustReleased(ebiten.KeyArrowLeft) || inpututil.IsKeyJustReleased(ebiten.KeyArrowRight) || inpututil.IsKeyJustReleased(ebiten.KeyArrowUp) || inpututil.IsKeyJustReleased(ebiten.KeyArrowDown) {
+			g.player.SetAnimation("idle")
+			g.player.SetSpeed(0, 0)
 		}
 	}
 
