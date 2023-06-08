@@ -1,8 +1,6 @@
 package gunthur
 
 import (
-	"time"
-
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
@@ -14,10 +12,6 @@ const (
 	GameStateMenu = iota
 	GameStatePlaying
 	GameStatePaused
-)
-
-var (
-	prevUpdateTime = time.Now()
 )
 
 type Game struct {
@@ -49,29 +43,27 @@ func (g *Game) Init() error {
 }
 
 func (g *Game) Update() error {
-	switch g.state {
-	case GameStateMenu:
-		if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
-			g.state = GameStatePlaying
-		}
-	case GameStatePlaying:
-		g.player.UpdatePosition()
+	g.player.UpdatePosition()
 
-		if inpututil.IsKeyJustPressed(ebiten.KeyArrowUp) {
-			g.player.SetAnimation("jump")
-		} else if inpututil.IsKeyJustPressed(ebiten.KeyArrowDown) {
+	g.pressedKeys = inpututil.AppendPressedKeys(g.pressedKeys[:0])
+	for _, key := range g.pressedKeys {
+		switch key.String() {
+		case "ArrowDown":
 			g.player.SetAnimation("crouch")
-		} else if inpututil.IsKeyJustPressed(ebiten.KeyArrowLeft) {
+		case "ArrowUp":
+			g.player.SetAnimation("jump")
+		case "ArrowRight":
+			g.player.SetAnimation("runRight")
+			g.player.SetSpeed(2, 0)
+		case "ArrowLeft":
 			g.player.SetAnimation("runLeft")
 			g.player.SetSpeed(-2, 0)
-		} else if inpututil.IsKeyJustReleased(ebiten.KeyArrowLeft) || inpututil.IsKeyJustReleased(ebiten.KeyArrowRight) || inpututil.IsKeyJustReleased(ebiten.KeyArrowUp) || inpututil.IsKeyJustReleased(ebiten.KeyArrowDown) {
-			g.player.SetAnimation("idle")
-			g.player.SetSpeed(0, 0)
 		}
 	}
 
 	if inpututil.IsKeyJustReleased(ebiten.KeyArrowLeft) || inpututil.IsKeyJustReleased(ebiten.KeyArrowRight) || inpututil.IsKeyJustReleased(ebiten.KeyArrowUp) || inpututil.IsKeyJustReleased(ebiten.KeyArrowDown) {
 		g.player.SetAnimation("idle")
+		g.player.SetSpeed(0, 0)
 	}
 
 	return nil
