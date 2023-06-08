@@ -1,26 +1,30 @@
 package main
 
 import (
-	"gophy-runner/gunthur"
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
-const (
-	screenWidth  = 320
-	screenHeight = 240
-)
+type Game struct{}
+
+func (g *Game) Update() error {
+	return nil
+}
+
+func (g *Game) Draw(screen *ebiten.Image) {
+	ebitenutil.DebugPrint(screen, "Hello, World!")
+}
+
+func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
+	return 320, 240
+}
 
 func main() {
-	g := gunthur.NewGame(screenWidth, screenHeight)
-	if err := g.Init(); err != nil {
-		log.Fatal(err)
-	}
-
-	ebiten.SetWindowSize(screenWidth*2, screenHeight*2)
-	ebiten.SetWindowTitle("Gunthur: Hack & Slash")
-	if err := ebiten.RunGame(g); err != nil {
+	ebiten.SetWindowSize(640, 480)
+	ebiten.SetWindowTitle("Hello, World!")
+	if err := ebiten.RunGame(&Game{}); err != nil {
 		log.Fatal(err)
 	}
 }

@@ -1,8 +1,0 @@
-Number of Sprites: 72
-Number of Rows: 11
-Number of Columns: 7
-Sprite Size: 50x37
-
-Sprites created by rvros
-
-https://rvros.itch.io/animated-pixel-hero
