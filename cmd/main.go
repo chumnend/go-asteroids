@@ -9,6 +9,7 @@ import (
 
 func main() {
 	game, w, h := gunthur.NewGame()
+	game.Init()
 
 	ebiten.SetWindowSize(w, h)
 	ebiten.SetWindowTitle("Gunthur: The Game")
