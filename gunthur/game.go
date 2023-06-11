@@ -19,11 +19,10 @@ type Game struct {
 
 // NewVector returns a Vector struct, window width and window height
 func NewGame() (*Game, int, int) {
-	return &Game{}, screenWidth * 2, screenHeight * 2
-}
-
-func (g *Game) Init() {
+	g := &Game{}
 	g.player = NewSprite()
+
+	return g, screenWidth * 2, screenHeight * 2
 }
 
 // Update proceeds the game state.
