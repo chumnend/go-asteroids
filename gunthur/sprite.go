@@ -30,6 +30,25 @@ func (s *Sprite) MoveTo(x int, y int) {
 	s.y = y
 }
 
+func (s *Sprite) HandleInput(keys []ebiten.Key) {
+	for _, key := range keys {
+		switch key.String() {
+		case "ArrowDown":
+			s.MoveTo(s.x, s.y+5)
+		case "ArrowUp":
+			s.MoveTo(s.x, s.y-5)
+		case "ArrowRight":
+			s.MoveTo(s.x+5, s.y)
+		case "ArrowLeft":
+			s.MoveTo(s.x-5, s.y)
+		}
+	}
+}
+
+func (s *Sprite) Update() error {
+	return nil
+}
+
 // Draw takes an ebiten screen object and draws the sprite on it
 func (s *Sprite) Draw(screen *ebiten.Image) {
 	purple := color.RGBA{255, 0, 255, 255}
