@@ -13,7 +13,8 @@ const (
 
 // Game implements ebiten.Game interface
 type Game struct {
-	Components  []interface{}
+	Scene
+
 	pressedKeys []ebiten.Key
 }
 
@@ -32,9 +33,7 @@ type IHandleInput interface {
 // NewVector returns a Vector struct, window width and window height
 func NewGame() (*Game, int, int) {
 	g := &Game{}
-
-	player := NewSprite()
-	g.Components = append(g.Components, player)
+	g.Components = append(g.Components, NewSprite()) // add player sprite to game
 
 	return g, screenWidth * scale, screenHeight * scale
 }
