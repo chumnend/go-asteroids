@@ -11,15 +11,8 @@ const (
 	scale        = 2
 )
 
-// Game implements ebiten.Game interface
-type Game struct {
-	Scene
-
-	pressedKeys []ebiten.Key
-}
-
 type IDraw interface {
-	Draw(*ebiten.Image)
+	Draw(*ebiten.Image, ebiten.DrawImageOptions)
 }
 
 type IUpdate interface {
@@ -30,10 +23,17 @@ type IHandleInput interface {
 	HandleInput(key []ebiten.Key)
 }
 
+// Game implements ebiten.Game interface
+type Game struct {
+	Scene
+
+	pressedKeys []ebiten.Key
+}
+
 // NewVector returns a Vector struct, window width and window height
 func NewGame() (*Game, int, int) {
 	g := &Game{}
-	g.Components = append(g.Components, NewSprite()) // add player sprite to game
+	g.Scene.Components = append(g.Components, NewSprite()) // add player sprite to game
 
 	return g, screenWidth * scale, screenHeight * scale
 }
@@ -47,27 +47,15 @@ func (g *Game) Update() error {
 			h.HandleInput(g.pressedKeys)
 		}
 	}
+	g.Scene.Update()
 
-	// Find all the components that can be updated, and update them.
-	for _, c := range g.Components {
-		if u, ok := c.(IUpdate); ok {
-			if err := u.Update(); err != nil {
-				return err
-			}
-		}
-	}
 	return nil
 }
 
 // Draw draws the game screen.
 // Draw is called every frame (typically 1/60[s] for 60Hz display).
 func (g *Game) Draw(screen *ebiten.Image) {
-	// Find all the components that can be drawn, and draw them.
-	for _, c := range g.Components {
-		if d, ok := c.(IDraw); ok {
-			d.Draw(screen)
-		}
-	}
+	g.Scene.Draw(screen, ebiten.DrawImageOptions{})
 }
 
 // Layout takes the outside size (e.g., the window size) and returns the (logical) screen size.

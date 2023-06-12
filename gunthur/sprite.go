@@ -50,7 +50,7 @@ func (s *Sprite) Update() error {
 }
 
 // Draw takes an ebiten screen object and draws the sprite on it
-func (s *Sprite) Draw(screen *ebiten.Image) {
+func (s *Sprite) Draw(screen *ebiten.Image, opts ebiten.DrawImageOptions) {
 	purple := color.RGBA{255, 0, 255, 255}
 	for x := s.x; x < s.x+s.width; x++ {
 		for y := s.y; y < s.y+s.height; y++ {
