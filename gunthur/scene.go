@@ -15,7 +15,7 @@ type Scene struct {
 func (s *Scene) Update() error {
 	// Find all the components that can be updated, and update them.
 	for _, c := range s.Components {
-		if u, ok := c.(IUpdate); ok {
+		if u, ok := c.(Updater); ok {
 			if err := u.Update(); err != nil {
 				return err
 			}
@@ -40,7 +40,7 @@ func (s *Scene) Draw(screen *ebiten.Image, opts ebiten.DrawImageOptions) {
 
 	// Find all the components that can be drawn, and draw them.
 	for _, c := range s.Components {
-		if d, ok := c.(IDraw); ok {
+		if d, ok := c.(Drawer); ok {
 			d.Draw(screen, newOpts)
 		}
 	}

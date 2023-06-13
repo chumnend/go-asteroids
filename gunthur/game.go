@@ -11,15 +11,18 @@ const (
 	scale        = 2
 )
 
-type IDraw interface {
+// Drawer is an interface for components that are to be drawn to ebiten screen
+type Drawer interface {
 	Draw(*ebiten.Image, ebiten.DrawImageOptions)
 }
 
-type IUpdate interface {
+// Updater is an interface for components that are to be updated
+type Updater interface {
 	Update() error
 }
 
-type IHandleInput interface {
+// Inputter is an interface for components that are to receive user input
+type Inputter interface {
 	HandleInput(key []ebiten.Key)
 }
 
@@ -43,7 +46,7 @@ func NewGame() (*Game, int, int) {
 func (g *Game) Update() error {
 	g.pressedKeys = inpututil.AppendPressedKeys(g.pressedKeys[:0])
 	for _, c := range g.Components {
-		if h, ok := c.(IHandleInput); ok {
+		if h, ok := c.(Inputter); ok {
 			h.HandleInput(g.pressedKeys)
 		}
 	}
