@@ -35,12 +35,12 @@ type Game struct {
 
 // NewVector returns a Vector struct, window width and window height
 func NewGame() (*Game, int, int) {
-	level1 := &Scene{}
-	level1.Components = append(level1.Components, NewSprite())
+	level := NewScene()
+	level.AddComponent(NewSprite())
 
 	g := &Game{
-		currentLevel: level1,
-		levels:       append(make([]*Scene, 10), level1),
+		currentLevel: level,
+		levels:       append(make([]*Scene, 10), level),
 	}
 
 	return g, screenWidth * scale, screenHeight * scale
