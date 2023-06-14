@@ -12,11 +12,18 @@ type Scene struct {
 	Offset     Point
 }
 
-func (s *Scene) Update() error {
+func (s *Scene) Update(keys []ebiten.Key) error {
+	// Find all the components that can handle input and pass them the keys.
+	for _, c := range s.Components {
+		if h, ok := c.(Inputter); ok {
+			h.HandleInput(keys)
+		}
+	}
+
 	// Find all the components that can be updated, and update them.
 	for _, c := range s.Components {
 		if u, ok := c.(Updater); ok {
-			if err := u.Update(); err != nil {
+			if err := u.Update(keys); err != nil {
 				return err
 			}
 		}

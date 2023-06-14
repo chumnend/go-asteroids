@@ -11,19 +11,19 @@ const (
 	scale        = 2
 )
 
-// Drawer is an interface for components that are to be drawn to ebiten screen
-type Drawer interface {
-	Draw(*ebiten.Image, ebiten.DrawImageOptions)
+// Inputter is an interface for components that are to receive user input
+type Inputter interface {
+	HandleInput([]ebiten.Key)
 }
 
 // Updater is an interface for components that are to be updated
 type Updater interface {
-	Update() error
+	Update([]ebiten.Key) error
 }
 
-// Inputter is an interface for components that are to receive user input
-type Inputter interface {
-	HandleInput(key []ebiten.Key)
+// Drawer is an interface for components that are to be drawn to ebiten screen
+type Drawer interface {
+	Draw(*ebiten.Image, ebiten.DrawImageOptions)
 }
 
 // Game implements ebiten.Game interface
@@ -36,7 +36,7 @@ type Game struct {
 // NewVector returns a Vector struct, window width and window height
 func NewGame() (*Game, int, int) {
 	g := &Game{}
-	g.Scene.Components = append(g.Components, NewSprite()) // add player sprite to game
+	g.Scene.Components = append(g.Scene.Components, NewSprite()) // add player sprite to game
 
 	return g, screenWidth * scale, screenHeight * scale
 }
@@ -45,12 +45,7 @@ func NewGame() (*Game, int, int) {
 // Update is called every tick (1/60 [s] by default).
 func (g *Game) Update() error {
 	g.pressedKeys = inpututil.AppendPressedKeys(g.pressedKeys[:0])
-	for _, c := range g.Components {
-		if h, ok := c.(Inputter); ok {
-			h.HandleInput(g.pressedKeys)
-		}
-	}
-	g.Scene.Update()
+	g.Scene.Update(g.pressedKeys)
 
 	return nil
 }
