@@ -28,15 +28,20 @@ type Drawer interface {
 
 // Game implements ebiten.Game interface
 type Game struct {
-	Scene
-
-	pressedKeys []ebiten.Key
+	currentLevel *Scene
+	levels       []*Scene
+	pressedKeys  []ebiten.Key
 }
 
 // NewVector returns a Vector struct, window width and window height
 func NewGame() (*Game, int, int) {
-	g := &Game{}
-	g.Scene.Components = append(g.Scene.Components, NewSprite()) // add player sprite to game
+	level1 := &Scene{}
+	level1.Components = append(level1.Components, NewSprite())
+
+	g := &Game{
+		currentLevel: level1,
+		levels:       append(make([]*Scene, 10), level1),
+	}
 
 	return g, screenWidth * scale, screenHeight * scale
 }
@@ -45,7 +50,7 @@ func NewGame() (*Game, int, int) {
 // Update is called every tick (1/60 [s] by default).
 func (g *Game) Update() error {
 	g.pressedKeys = inpututil.AppendPressedKeys(g.pressedKeys[:0])
-	g.Scene.Update(g.pressedKeys)
+	g.currentLevel.Update(g.pressedKeys)
 
 	return nil
 }
@@ -53,7 +58,7 @@ func (g *Game) Update() error {
 // Draw draws the game screen.
 // Draw is called every frame (typically 1/60[s] for 60Hz display).
 func (g *Game) Draw(screen *ebiten.Image) {
-	g.Scene.Draw(screen, ebiten.DrawImageOptions{})
+	g.currentLevel.Draw(screen, ebiten.DrawImageOptions{})
 }
 
 // Layout takes the outside size (e.g., the window size) and returns the (logical) screen size.
