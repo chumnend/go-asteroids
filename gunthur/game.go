@@ -29,18 +29,18 @@ type Drawer interface {
 // Game implements ebiten.Game interface
 type Game struct {
 	currentLevel *Scene
-	levels       []*Scene
+	levels       map[int]*Scene
 	pressedKeys  []ebiten.Key
 }
 
 // NewVector returns a Vector struct, window width and window height
 func NewGame() (*Game, int, int) {
-	level := NewScene()
-	level.AddComponent(NewSprite())
+	levels := loadLevels()
+	currentLevel := levels[1]
 
 	g := &Game{
-		currentLevel: level,
-		levels:       append(make([]*Scene, 10), level),
+		currentLevel: currentLevel,
+		levels:       levels,
 	}
 
 	return g, screenWidth * scale, screenHeight * scale
