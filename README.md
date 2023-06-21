@@ -1,7 +1,7 @@
-# Gunthur
+# Gunthur (working title)
 
 ## About the Project
-A 2D hack-and-slash game made in Golang with Ebiten
+TBD
 
 ### Demo 
 TBD
