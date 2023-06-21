@@ -27,12 +27,28 @@ func NewEnemy() *Enemy {
 }
 
 func (e *Enemy) Update(keys []ebiten.Key) error {
+	minX := e.radius
+	maxX := screenWidth - e.radius
 	e.x += e.vx
-	e.y += e.vy
-	if e.x-e.radius <= 0 || e.x+e.radius >= screenWidth {
+	if e.x <= minX || e.x >= maxX {
+		if e.x <= minX {
+			e.x = minX
+		} else {
+			e.x = maxX
+		}
 		e.vx *= -1
 	}
-	if e.y-e.radius <= 0 || e.y+e.radius >= screenHeight {
+
+	minY := e.radius
+	maxY := screenHeight - e.radius
+	e.y += e.vy
+	if e.y <= minY || e.y >= maxY {
+		if e.y <= minY {
+			e.y = minY
+		} else {
+			e.y = maxY
+		}
+
 		e.vy *= -1
 	}
 
@@ -47,6 +63,15 @@ func (e *Enemy) Draw(screen *ebiten.Image, opts ebiten.DrawImageOptions) {
 		yDelta := float64(e.radius) * math.Sin(angle)
 		x1 := int(math.Round(float64(e.x) + xDelta))
 		y1 := int(math.Round(float64(e.y) + yDelta))
+		if y1 < e.y {
+			for y2 := y1; y2 <= e.y; y2++ {
+				screen.Set(x1, y2, orange)
+			}
+		} else {
+			for y2 := y1; y2 > e.y; y2-- {
+				screen.Set(x1, y2, orange)
+			}
+		}
 		screen.Set(x1, y1, orange)
 	}
 }
