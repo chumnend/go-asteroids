@@ -58,7 +58,7 @@ func (p *Player) HandleInput(keys []ebiten.Key) {
 	}
 }
 
-func (p *Player) Update() error {
+func (p *Player) Update(keys []ebiten.Key) error {
 	return nil
 }
 

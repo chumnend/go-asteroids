@@ -13,17 +13,17 @@ const (
 
 // Inputter is an interface for components that are to receive user input
 type Inputter interface {
-	HandleInput([]ebiten.Key)
+	HandleInput(keys []ebiten.Key)
 }
 
 // Updater is an interface for components that are to be updated
 type Updater interface {
-	Update([]ebiten.Key) error
+	Update(keys []ebiten.Key) error
 }
 
 // Drawer is an interface for components that are to be drawn to ebiten screen
 type Drawer interface {
-	Draw(*ebiten.Image, ebiten.DrawImageOptions)
+	Draw(screen *ebiten.Image, opts ebiten.DrawImageOptions)
 }
 
 // Game implements ebiten.Game interface
