@@ -1,7 +1,7 @@
-# Gunthur (working title)
+# Asteroids (A Go Clone)
 
 ## About the Project
-TBD
+An Asteroids clone made with Go.
 
 ### Demo 
 TBD
