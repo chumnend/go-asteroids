@@ -9,8 +9,8 @@ import (
 
 const (
 	// internal game size (before scaling)
-	gameScreenWidth  = 320
-	gameScreenHeight = 240
+	gameScreenWidth  = 500
+	gameScreenHeight = 300
 
 	scale        = 2 // scale 200% in window
 	windowWidth  = gameScreenWidth * scale

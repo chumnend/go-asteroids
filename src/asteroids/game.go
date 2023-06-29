@@ -14,18 +14,25 @@ const (
 
 // Game implements ebiten.Game interface
 type Game struct {
-	width  int
-	height int
-
-	state       GameState
-	pressedKeys []ebiten.Key
+	width        int
+	height       int
+	state        GameState
+	pressedKeys  []ebiten.Key
+	currentLevel *Scene
+	levels       map[int]*Scene
 }
 
 // NewGame returns a Game struct, takes the size of the game screen
 func NewGame(width, height int) *Game {
+	levels := make(map[int]*Scene)
+	level1 := NewScene()
+	levels[1] = level1
+
 	return &Game{
-		width:  width,
-		height: height,
+		width:        width,
+		height:       height,
+		currentLevel: levels[1],
+		levels:       levels,
 	}
 }
 
@@ -33,6 +40,7 @@ func NewGame(width, height int) *Game {
 // Update is called every tick (1/60 [s] by default).
 func (g *Game) Update() error {
 	g.processInput()
+	g.currentLevel.Update(g.pressedKeys)
 	return nil
 }
 
@@ -43,6 +51,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	case GameStateMenu:
 		g.drawStartMenu(screen)
 	case GameStatePlaying:
+		g.currentLevel.Draw(screen, ebiten.DrawImageOptions{})
 	case GameStateGameOver:
 		g.drawGameOver(screen)
 	}
