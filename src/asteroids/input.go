@@ -6,29 +6,14 @@ import (
 )
 
 func (g *Game) processInput() {
-	g.pressedKeys = inpututil.AppendPressedKeys(g.pressedKeys[:0])
-
-	switch g.state {
+	switch g.gameState {
 	case GameStateMenu:
-		for _, key := range g.pressedKeys {
-			switch key {
-			case ebiten.KeySpace:
-				g.state = GameStatePlaying
-			}
+		if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
+			g.startGame()
 		}
 	case GameStatePlaying:
-		for _, key := range g.pressedKeys {
-			switch key {
-			case ebiten.KeyP:
-				g.state = GameStateGameOver
-			}
-		}
-	case GameStateGameOver:
-		for _, key := range g.pressedKeys {
-			switch key {
-			case ebiten.KeyR:
-				g.state = GameStateMenu
-			}
+		if inpututil.IsKeyJustPressed(ebiten.KeyP) {
+			g.pauseGame()
 		}
 	}
 }

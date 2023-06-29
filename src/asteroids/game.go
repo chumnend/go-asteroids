@@ -2,68 +2,118 @@ package asteroids
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
+	"golang.org/x/image/font"
+)
+
+const (
+	// internal game size
+	gameWidth  = 300
+	gameHeight = 250
+
+	scale        = 2 // scale 200% in window
+	windowWidth  = gameWidth * scale
+	windowHeight = gameHeight * scale
+
+	dt = 1 / 60.0 // assume that delta is fixed and we're always running at 60 FPS
 )
 
 type GameState int
 
 const (
-	GameStateMenu = iota
+	GameStateMenu GameState = iota
 	GameStatePlaying
-	GameStateGameOver
-)
-
-var (
-	screenWidth  int
-	screenHeight int
 )
 
 // Game implements ebiten.Game interface
 type Game struct {
-	state        GameState
-	pressedKeys  []ebiten.Key
-	currentLevel *Scene
-	levels       map[int]*Scene
+	ship      *Ship
+	asteroids []*Asteroid
+
+	gameState GameState
+	menuState MenuState
+
+	font font.Face
 }
 
 // NewGame returns a Game struct, takes the size of the game screen
-func NewGame(width, height int) *Game {
-	levels := make(map[int]*Scene)
-	level1 := NewScene()
-	level1.AddComponent(NewPlayer())
-	level1.AddComponent(NewObstacle())
-	levels[1] = level1
+func NewGame() (*Game, int, int) {
+	return &Game{}, windowWidth, windowHeight
+}
 
-	screenWidth = width
-	screenHeight = height
-
-	return &Game{
-		currentLevel: levels[1],
-		levels:       levels,
+// Init loads all resources for the game
+func (g *Game) Init() error {
+	if err := g.loadMenuResources(); err != nil {
+		return err
 	}
+
+	if err := g.loadObjects(); err != nil {
+		return err
+	}
+
+	g.showMenu(MenuMain)
+
+	return nil
 }
 
 // Update proceeds the game state.
 // Update is called every tick (1/60 [s] by default).
 func (g *Game) Update() error {
 	g.processInput()
-	g.currentLevel.Update(g.pressedKeys)
 	return nil
 }
 
 // Draw draws the game screen.
 // Draw is called every frame (typically 1/60[s] for 60Hz display).
 func (g *Game) Draw(screen *ebiten.Image) {
-	switch g.state {
+	switch g.gameState {
 	case GameStateMenu:
-		g.drawStartMenu(screen)
+		g.drawMenu(screen)
 	case GameStatePlaying:
-		g.currentLevel.Draw(screen, ebiten.DrawImageOptions{})
-	case GameStateGameOver:
-		g.drawGameOver(screen)
+		g.ship.Draw(screen)
+		for _, a := range g.asteroids {
+			a.Draw(screen)
+		}
 	}
 }
 
 // Layout takes the outside size (e.g., the window size) and returns the (logical) screen size.
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
-	return screenWidth, screenHeight
+	return gameWidth, gameHeight
+}
+
+func (g *Game) loadObjects() error {
+	// load ship
+	ship, err := makeShip()
+	if err != nil {
+		return err
+	}
+	// PLACEHOLDER
+	ship.X = 100
+	ship.Y = 100
+	g.ship = ship
+
+	// load asteroids
+	asteroid, err := makeAsteroid()
+	if err != nil {
+		return err
+	}
+	// PLACEHOLDER
+	asteroid.X = 50
+	asteroid.Y = 50
+	g.asteroids = append(g.asteroids, asteroid)
+
+	return nil
+}
+
+func (g *Game) showMenu(state MenuState) {
+	g.gameState = GameStateMenu
+	g.menuState = state
+}
+
+func (g *Game) startGame() {
+	g.gameState = GameStatePlaying
+}
+
+func (g *Game) pauseGame() {
+	g.showMenu(MenuPause)
 }
