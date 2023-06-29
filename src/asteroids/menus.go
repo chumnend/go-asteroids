@@ -18,12 +18,12 @@ func (g *Game) drawStartMenu(screen *ebiten.Image) {
 	texts = []string{"Press Space to start"}
 
 	for i, t := range titleTexts {
-		x := (int(g.width) - len(t)*fontSizeLrg) / 2
-		text.Draw(screen, t, titleFont, x, (i+4)*fontSizeLrg, color.White)
+		x := (int(g.width) - len(t)*fontSizeLg) / 2
+		text.Draw(screen, t, tfLg, x, (i+4)*fontSizeLg, color.White)
 	}
 	for i, t := range texts {
-		x := (g.width - len(t)*fontSize) / 2
-		text.Draw(screen, t, textFont, x, (i+4)*2*fontSize, color.White)
+		x := (g.width - len(t)*fontSizeMd) / 2
+		text.Draw(screen, t, tfMd, x, (i+4)*2*fontSizeMd, color.White)
 	}
 }
 
@@ -37,11 +37,11 @@ func (g *Game) drawGameOver(screen *ebiten.Image) {
 	texts = []string{"Press R to restart"}
 
 	for i, t := range titleTexts {
-		x := (g.width - len(t)*fontSizeLrg) / 2
-		text.Draw(screen, t, titleFont, x, (i+4)*fontSizeLrg, color.White)
+		x := (g.width - len(t)*fontSizeLg) / 2
+		text.Draw(screen, t, tfLg, x, (i+4)*fontSizeLg, color.White)
 	}
 	for i, t := range texts {
-		x := (g.width - len(t)*fontSize) / 2
-		text.Draw(screen, t, textFont, x, (i+4)*2*fontSize, color.White)
+		x := (g.width - len(t)*fontSizeMd) / 2
+		text.Draw(screen, t, tfMd, x, (i+4)*2*fontSizeMd, color.White)
 	}
 }

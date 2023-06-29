@@ -9,31 +9,36 @@ import (
 )
 
 const (
-	fontSize    = 12
-	fontSizeLrg = fontSize * 1.5
+	fontSizeMd = 12
+	fontSizeLg = fontSizeMd * 1.5
+	dpi        = 72
 )
 
 var (
-	titleFont font.Face
-	textFont  font.Face
+	tfMd font.Face
+	tfLg font.Face
 )
 
 func init() {
+	var err error
+
+	// initialize fonts to be used
 	tt, err := opentype.Parse(fonts.PressStart2P_ttf)
 	if err != nil {
 		log.Fatal(err)
 	}
-	const dpi = 72
-	titleFont, err = opentype.NewFace(tt, &opentype.FaceOptions{
-		Size:    fontSizeLrg,
+
+	tfMd, err = opentype.NewFace(tt, &opentype.FaceOptions{
+		Size:    fontSizeMd,
 		DPI:     dpi,
 		Hinting: font.HintingFull,
 	})
 	if err != nil {
 		log.Fatal(err)
 	}
-	textFont, err = opentype.NewFace(tt, &opentype.FaceOptions{
-		Size:    fontSize,
+
+	tfLg, err = opentype.NewFace(tt, &opentype.FaceOptions{
+		Size:    fontSizeLg,
 		DPI:     dpi,
 		Hinting: font.HintingFull,
 	})
