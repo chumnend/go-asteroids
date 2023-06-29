@@ -3,7 +3,7 @@ package asteroids
 import "github.com/hajimehoshi/ebiten/v2"
 
 type Position struct {
-	X, Y float64
+	x, y int
 }
 
 // Inputter is an interface for components that are to receive user input

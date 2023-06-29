@@ -17,9 +17,9 @@ func (s *Scene) AddComponent(component interface{}) {
 	s.components = append(s.components, component)
 }
 
-func (s *Scene) SetOffset(x, y float64) {
-	s.offset.X = x
-	s.offset.Y = y
+func (s *Scene) SetOffset(x, y int) {
+	s.offset.x = x
+	s.offset.y = y
 }
 
 func (s *Scene) Update(keys []ebiten.Key) error {
@@ -43,10 +43,10 @@ func (s *Scene) Update(keys []ebiten.Key) error {
 
 func (s *Scene) Draw(screen *ebiten.Image, opts ebiten.DrawImageOptions) {
 	// Take parent opts and apply scene offsets
-	newOpts := opts                                // Copy opts
-	newOpts.GeoM.Reset()                           // Reset GeoM to an identity matrix
-	newOpts.GeoM.Translate(s.offset.X, s.offset.Y) // Translate from spritespace to worldspace
-	newOpts.GeoM.Concat(opts.GeoM)                 // Reapply opts.GeoM to translate from worldspace to screenspace via whatever geometry matrix was supplied by the parent
+	newOpts := opts                                                  // Copy opts
+	newOpts.GeoM.Reset()                                             // Reset GeoM to an identity matrix
+	newOpts.GeoM.Translate(float64(s.offset.x), float64(s.offset.y)) // Translate from spritespace to worldspace
+	newOpts.GeoM.Concat(opts.GeoM)                                   // Reapply opts.GeoM to translate from worldspace to screenspace via whatever geometry matrix was supplied by the parent
 
 	// Find all the components that can be drawn, and draw them.
 	for _, c := range s.components {

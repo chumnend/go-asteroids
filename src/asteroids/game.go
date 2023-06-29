@@ -12,10 +12,13 @@ const (
 	GameStateGameOver
 )
 
+var (
+	screenWidth  int
+	screenHeight int
+)
+
 // Game implements ebiten.Game interface
 type Game struct {
-	width        int
-	height       int
 	state        GameState
 	pressedKeys  []ebiten.Key
 	currentLevel *Scene
@@ -26,11 +29,14 @@ type Game struct {
 func NewGame(width, height int) *Game {
 	levels := make(map[int]*Scene)
 	level1 := NewScene()
+	level1.AddComponent(NewPlayer())
+	level1.AddComponent(NewObstacle())
 	levels[1] = level1
 
+	screenWidth = width
+	screenHeight = height
+
 	return &Game{
-		width:        width,
-		height:       height,
 		currentLevel: levels[1],
 		levels:       levels,
 	}
@@ -59,5 +65,5 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 // Layout takes the outside size (e.g., the window size) and returns the (logical) screen size.
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
-	return g.width, g.height
+	return screenWidth, screenHeight
 }
