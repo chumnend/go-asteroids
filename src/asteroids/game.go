@@ -75,9 +75,6 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		g.drawMenu(screen)
 	case GameStatePlaying:
 		g.ship.Draw(screen)
-		for _, a := range g.asteroids {
-			a.Draw(screen)
-		}
 	}
 }
 
@@ -92,9 +89,6 @@ func (g *Game) loadObjects() error {
 	if err != nil {
 		return err
 	}
-	// PLACEHOLDER
-	ship.X = 100
-	ship.Y = 100
 	g.ship = ship
 
 	// load asteroids
@@ -102,9 +96,6 @@ func (g *Game) loadObjects() error {
 	if err != nil {
 		return err
 	}
-	// PLACEHOLDER
-	asteroid.X = 50
-	asteroid.Y = 50
 	g.asteroids = append(g.asteroids, asteroid)
 
 	return nil
