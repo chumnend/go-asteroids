@@ -59,6 +59,11 @@ func (g *Game) Init() error {
 // Update is called every tick (1/60 [s] by default).
 func (g *Game) Update() error {
 	g.processInput()
+
+	switch g.gameState {
+	case GameStatePlaying:
+	}
+
 	return nil
 }
 
