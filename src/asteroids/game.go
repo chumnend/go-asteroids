@@ -33,6 +33,8 @@ type Game struct {
 	menuState MenuState
 
 	font font.Face
+
+	pressedKeys []ebiten.Key
 }
 
 // NewGame returns a Game struct, takes the size of the game screen
