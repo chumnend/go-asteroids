@@ -77,6 +77,9 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		g.drawMenu(screen)
 	case GameStatePlaying:
 		g.ship.Draw(screen)
+		for _, a := range g.asteroids {
+			a.Draw(screen)
+		}
 	}
 }
 
@@ -85,6 +88,7 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return gameWidth, gameHeight
 }
 
+// loadObjects should only be called before the game is run, and is responsible for loading all game objects
 func (g *Game) loadObjects() error {
 	// load ship
 	ship, err := makeShip()
@@ -94,24 +98,29 @@ func (g *Game) loadObjects() error {
 	g.ship = ship
 
 	// load asteroids
-	asteroid, err := makeAsteroid()
+	asteroids, err := makeAsteroids()
 	if err != nil {
 		return err
 	}
-	g.asteroids = append(g.asteroids, asteroid)
+	g.asteroids = asteroids
 
 	return nil
 }
 
+// showMenu will change the game state to show menus and show the menu state that is given
 func (g *Game) showMenu(state MenuState) {
 	g.gameState = GameStateMenu
 	g.menuState = state
 }
 
+// startGame changes the game state to playing
+// TODO: logic to start game from current state
 func (g *Game) startGame() {
 	g.gameState = GameStatePlaying
 }
 
+// pauseGame will halt all action on screen and show the pause menu
+// TODO: logic for pausing game
 func (g *Game) pauseGame() {
 	g.showMenu(MenuPause)
 }

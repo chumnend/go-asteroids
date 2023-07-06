@@ -13,9 +13,11 @@ func makeShip() (*Ship, error) {
 		Entity: NewEntity(),
 	}
 
-	ship.Position.X = 100
-	ship.Position.Y = 100
+	// set initail player position
+	ship.Position.X = gameWidth / 2
+	ship.Position.Y = gameHeight / 2
 
+	// load the player sprite
 	img, _, err := ebitenutil.NewImageFromFile("src/assets/sprites/PLAYER.png")
 	if err != nil {
 		return nil, err
