@@ -15,22 +15,22 @@ func makeAsteroid() (*Asteroid, error) {
 		Entity: NewEntity(),
 	}
 
-	// get random position
-	randX := rand.Intn(gameWidth)
-	randY := rand.Intn(gameHeight)
-	asteroid.Position.X = randX
-	asteroid.Position.Y = randY
-
-	// set velocity
-	asteroid.Velocity.Vx = 1
-	asteroid.Velocity.Vy = -1
-
 	// load asteroid sprite
 	img, _, err := ebitenutil.NewImageFromFile("src/assets/sprites/ROCK.png")
 	if err != nil {
 		return nil, err
 	}
 	asteroid.Sprite = NewSprite(img)
+
+	// get random position
+	randX := rand.Intn(gameWidth - img.Bounds().Dy())
+	randY := rand.Intn(gameHeight - img.Bounds().Dy())
+	asteroid.Position.X = randX
+	asteroid.Position.Y = randY
+
+	// set velocity
+	asteroid.Velocity.Vx = 1
+	asteroid.Velocity.Vy = -1
 
 	return asteroid, nil
 }
