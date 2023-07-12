@@ -62,6 +62,10 @@ func (g *Game) Init() error {
 func (g *Game) Update() error {
 	g.processInput()
 
+	for _, a := range g.asteroids {
+		a.updatePosition()
+	}
+
 	switch g.gameState {
 	case GameStatePlaying:
 	}

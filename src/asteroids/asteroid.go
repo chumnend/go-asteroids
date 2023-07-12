@@ -10,6 +10,31 @@ type Asteroid struct {
 	Entity
 }
 
+func makeAsteroid() (*Asteroid, error) {
+	asteroid := &Asteroid{
+		Entity: NewEntity(),
+	}
+
+	// get random position
+	randX := rand.Intn(gameWidth)
+	randY := rand.Intn(gameHeight)
+	asteroid.Position.X = randX
+	asteroid.Position.Y = randY
+
+	// set velocity
+	asteroid.Velocity.Vx = 1
+	asteroid.Velocity.Vy = -1
+
+	// load asteroid sprite
+	img, _, err := ebitenutil.NewImageFromFile("src/assets/sprites/ROCK.png")
+	if err != nil {
+		return nil, err
+	}
+	asteroid.Sprite = NewSprite(img)
+
+	return asteroid, nil
+}
+
 func makeAsteroids() ([]*Asteroid, error) {
 	numberOfAsteroids := 3
 	asteroids := make([]*Asteroid, 0)
@@ -25,23 +50,16 @@ func makeAsteroids() ([]*Asteroid, error) {
 	return asteroids, nil
 }
 
-func makeAsteroid() (*Asteroid, error) {
-	asteroid := &Asteroid{
-		Entity: NewEntity(),
+func (a *Asteroid) updatePosition() {
+	rect := a.getAABB()
+
+	a.Position.X += a.Velocity.Vx
+	if float64(a.Position.X)+rect.W >= gameWidth || float64(a.Position.X) <= 0 {
+		a.Velocity.Vx *= -1
 	}
 
-	// get random position
-	randX := rand.Intn(gameWidth)
-	randY := rand.Intn(gameHeight)
-	asteroid.Position.X = randX
-	asteroid.Position.Y = randY
-
-	// load asteroid sprite
-	img, _, err := ebitenutil.NewImageFromFile("src/assets/sprites/ROCK.png")
-	if err != nil {
-		return nil, err
+	a.Position.Y += a.Velocity.Vy
+	if float64(a.Position.Y)+rect.H >= gameHeight || float64(a.Position.Y) <= 0 {
+		a.Velocity.Vy *= -1
 	}
-	asteroid.Sprite = NewSprite(img)
-
-	return asteroid, nil
 }
