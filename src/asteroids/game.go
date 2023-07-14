@@ -64,8 +64,16 @@ func (g *Game) Update() error {
 
 	switch g.gameState {
 	case GameStatePlaying:
+		collided := false
 		for _, a := range g.asteroids {
 			a.updatePosition()
+			didCollide := g.checkCollision(&a.Entity, &g.ship.Entity)
+			if didCollide {
+				collided = true
+			}
+		}
+		if collided {
+			g.showMenu(MenuGameOver)
 		}
 	}
 
@@ -126,4 +134,12 @@ func (g *Game) startGame() {
 // TODO: logic for pausing game
 func (g *Game) pauseGame() {
 	g.showMenu(MenuPause)
+}
+
+// checkCollision checks if two entites overlap
+func (g *Game) checkCollision(o1 *Entity, o2 *Entity) bool {
+	rect1 := o1.getAABB().ToImageRect()
+	rect2 := o2.getAABB().ToImageRect()
+
+	return rect1.Overlaps(rect2)
 }
