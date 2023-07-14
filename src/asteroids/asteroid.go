@@ -22,15 +22,15 @@ func makeAsteroid() (*Asteroid, error) {
 	}
 	asteroid.Sprite = NewSprite(img)
 
-	// get random position
+	// get random initial position
 	randX := rand.Intn(gameWidth - img.Bounds().Dy())
 	randY := rand.Intn(gameHeight - img.Bounds().Dy())
-	asteroid.Position.X = randX
-	asteroid.Position.Y = randY
+	asteroid.X = randX
+	asteroid.Y = randY
 
 	// set velocity
-	asteroid.Velocity.Vx = 1
-	asteroid.Velocity.Vy = -1
+	asteroid.Vx = 1
+	asteroid.Vy = -1
 
 	return asteroid, nil
 }
@@ -53,13 +53,13 @@ func makeAsteroids() ([]*Asteroid, error) {
 func (a *Asteroid) updatePosition() {
 	rect := a.getAABB()
 
-	a.Position.X += a.Velocity.Vx
-	if float64(a.Position.X)+rect.W >= gameWidth || float64(a.Position.X) <= 0 {
-		a.Velocity.Vx *= -1
+	a.X += a.Vx
+	if float64(a.X)+rect.W >= gameWidth || float64(a.X) <= 0 {
+		a.Vx *= -1
 	}
 
-	a.Position.Y += a.Velocity.Vy
-	if float64(a.Position.Y)+rect.H >= gameHeight || float64(a.Position.Y) <= 0 {
-		a.Velocity.Vy *= -1
+	a.Y += a.Vy
+	if float64(a.Y)+rect.H >= gameHeight || float64(a.Y) <= 0 {
+		a.Vy *= -1
 	}
 }

@@ -23,24 +23,24 @@ func (g *Game) processInput() {
 		for _, key := range g.pressedKeys {
 			switch key.String() {
 			case "ArrowUp":
-				newPos := g.ship.Position.Y - 2
+				newPos := g.ship.Y - 2
 				if newPos > 0 {
-					g.ship.Position.Y = newPos
+					g.ship.Y = newPos
 				}
 			case "ArrowDown":
-				newPos := g.ship.Position.Y + 2
+				newPos := g.ship.Y + 2
 				if newPos+int(rect.H) < gameHeight {
-					g.ship.Position.Y = newPos
+					g.ship.Y = newPos
 				}
 			case "ArrowLeft":
-				newPos := g.ship.Position.X - 2
+				newPos := g.ship.X - 2
 				if newPos > 0 {
-					g.ship.Position.X = newPos
+					g.ship.X = newPos
 				}
 			case "ArrowRight":
-				newPos := g.ship.Position.X + 2
+				newPos := g.ship.X + 2
 				if newPos+int(rect.W) < gameWidth {
-					g.ship.Position.X = newPos
+					g.ship.X = newPos
 				}
 			}
 		}
