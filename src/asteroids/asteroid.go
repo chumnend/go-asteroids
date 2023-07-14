@@ -23,6 +23,7 @@ func makeAsteroid() (*Asteroid, error) {
 	asteroid.Sprite = NewSprite(img)
 
 	// get random initial position
+	// TODO: dont spawn asteroid on ship
 	randX := rand.Intn(gameWidth - img.Bounds().Dy())
 	randY := rand.Intn(gameHeight - img.Bounds().Dy())
 	asteroid.X = randX
@@ -62,4 +63,12 @@ func (a *Asteroid) updatePosition() {
 	if float64(a.Y)+rect.H >= gameHeight || float64(a.Y) <= 0 {
 		a.Vy *= -1
 	}
+}
+
+func (a *Asteroid) resetPosition() {
+	// TODO: dont spawn asteroid on ship
+	randX := rand.Intn(gameWidth - a.Sprite.Image.Bounds().Dy())
+	randY := rand.Intn(gameHeight - a.Sprite.Image.Bounds().Dy())
+	a.X = randX
+	a.Y = randY
 }

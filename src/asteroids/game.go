@@ -130,6 +130,19 @@ func (g *Game) startGame() {
 	g.gameState = GameStatePlaying
 }
 
+// restartGame resets the location of all objects
+func (g *Game) restartGame() {
+	// reset the ships position
+	g.ship.resetPosition()
+
+	// reset asteroids
+	for _, a := range g.asteroids {
+		a.resetPosition()
+	}
+
+	g.gameState = GameStatePlaying
+}
+
 // pauseGame will halt all action on screen and show the pause menu
 // TODO: logic for pausing game
 func (g *Game) pauseGame() {

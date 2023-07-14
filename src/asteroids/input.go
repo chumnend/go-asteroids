@@ -8,9 +8,27 @@ import (
 func (g *Game) processInput() {
 	switch g.gameState {
 	case GameStateMenu:
-		if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
-			g.startGame()
+		switch g.menuState {
+		case MenuMain:
+			if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
+				g.startGame()
+			}
+		case MenuPause:
+			if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
+				g.startGame()
+			}
+		case MenuGameOver:
+			if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
+				g.restartGame()
+			}
+		case MenuWin:
+			if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
+				g.restartGame()
+			}
+		default:
+			panic("unexpected state")
 		}
+
 	case GameStatePlaying:
 		if inpututil.IsKeyJustPressed(ebiten.KeyP) {
 			g.pauseGame()

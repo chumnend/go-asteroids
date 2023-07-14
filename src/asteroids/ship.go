@@ -13,7 +13,7 @@ func makeShip() (*Ship, error) {
 		Entity: NewEntity(),
 	}
 
-	// set initail player position
+	// set initial player position
 	ship.X = gameWidth / 2
 	ship.Y = gameHeight / 2
 
@@ -25,4 +25,9 @@ func makeShip() (*Ship, error) {
 	ship.Sprite = NewSprite(img)
 
 	return ship, nil
+}
+
+func (s *Ship) resetPosition() {
+	s.X = gameWidth / 2
+	s.Y = gameHeight / 2
 }
