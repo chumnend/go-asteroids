@@ -6,6 +6,12 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
+const (
+	INITIAL_NUMBER_OF_ASTEROIDS = 3
+	INITIAL_ASTEROID_VX         = 1
+	INITIAL_ASTEROID_VY         = -1
+)
+
 type Asteroid struct {
 	Entity
 }
@@ -30,14 +36,14 @@ func makeAsteroid() (*Asteroid, error) {
 	asteroid.Y = randY
 
 	// set velocity
-	asteroid.Vx = 1
-	asteroid.Vy = -1
+	asteroid.Vx = INITIAL_ASTEROID_VX
+	asteroid.Vy = INITIAL_ASTEROID_VY
 
 	return asteroid, nil
 }
 
 func makeAsteroids() ([]*Asteroid, error) {
-	numberOfAsteroids := 3
+	numberOfAsteroids := INITIAL_NUMBER_OF_ASTEROIDS
 	asteroids := make([]*Asteroid, 0)
 
 	for i := 0; i < numberOfAsteroids; i++ {

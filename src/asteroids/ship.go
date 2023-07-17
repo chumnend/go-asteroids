@@ -4,6 +4,13 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
+const (
+	SHIP_START_X    = gameWidth / 2
+	SHIP_START_Y    = gameHeight / 2
+	INITIAL_SHIP_VX = 2
+	INITIAL_SHIP_VY = 2
+)
+
 type Ship struct {
 	Entity
 }
@@ -14,8 +21,10 @@ func makeShip() (*Ship, error) {
 	}
 
 	// set initial player position
-	ship.X = gameWidth / 2
-	ship.Y = gameHeight / 2
+	ship.X = SHIP_START_X
+	ship.Y = SHIP_START_Y
+	ship.Vx = INITIAL_SHIP_VX
+	ship.Vy = INITIAL_SHIP_VY
 
 	// load the player sprite
 	img, _, err := ebitenutil.NewImageFromFile("src/assets/sprites/PLAYER.png")
@@ -28,6 +37,6 @@ func makeShip() (*Ship, error) {
 }
 
 func (s *Ship) resetPosition() {
-	s.X = gameWidth / 2
-	s.Y = gameHeight / 2
+	s.X = SHIP_START_X
+	s.Y = SHIP_START_Y
 }
