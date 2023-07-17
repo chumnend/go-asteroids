@@ -72,3 +72,8 @@ func (a *Asteroid) resetPosition() {
 	a.X = randX
 	a.Y = randY
 }
+
+func (a *Asteroid) bounce() {
+	a.Vx *= -1
+	a.Vy *= -1
+}

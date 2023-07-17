@@ -60,18 +60,34 @@ func (g *Game) Init() error {
 // Update proceeds the game state.
 // Update is called every tick (1/60 [s] by default).
 func (g *Game) Update() error {
-	g.processInput()
+	g.processInput() // reads user input and updates game accordingly
 
 	switch g.gameState {
 	case GameStatePlaying:
 		collided := false
-		for _, a := range g.asteroids {
+
+		for idx, a := range g.asteroids {
 			a.updatePosition()
+
+			// check if any asteroids collided with the ship
 			didCollide := g.checkCollision(&a.Entity, &g.ship.Entity)
 			if didCollide {
 				collided = true
 			}
+
+			// check if asteroid collided with other asteroids
+			otherAsteroids := make([]*Asteroid, len(g.asteroids))
+			copy(otherAsteroids, g.asteroids)
+			otherAsteroids = append(otherAsteroids[:idx], otherAsteroids[idx+1:]...)
+			for _, oA := range otherAsteroids {
+				didBounce := g.checkCollision(&a.Entity, &oA.Entity)
+				if didBounce {
+					a.bounce()
+				}
+			}
 		}
+
+		// on ship collision go to game over state
 		if collided {
 			g.showMenu(MenuGameOver)
 		}
