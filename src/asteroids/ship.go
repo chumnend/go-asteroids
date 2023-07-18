@@ -40,3 +40,33 @@ func (s *Ship) resetPosition() {
 	s.X = SHIP_START_X
 	s.Y = SHIP_START_Y
 }
+
+func (s *Ship) moveUp() {
+	newPos := s.Y - 2
+	if newPos > 0 {
+		s.Y = newPos
+	}
+}
+
+func (s *Ship) moveDown() {
+	rect := s.getAABB()
+	newPos := s.Y + 2
+	if newPos+int(rect.H) < gameHeight {
+		s.Y = newPos
+	}
+}
+
+func (s *Ship) moveLeft() {
+	newPos := s.X - 2
+	if newPos > 0 {
+		s.X = newPos
+	}
+}
+
+func (s *Ship) moveRight() {
+	rect := s.getAABB()
+	newPos := s.X + 2
+	if newPos+int(rect.W) < gameWidth {
+		s.X = newPos
+	}
+}
