@@ -2,6 +2,7 @@ package asteroids
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"golang.org/x/image/font"
 )
 
@@ -60,38 +61,8 @@ func (g *Game) Init() error {
 // Update proceeds the game state.
 // Update is called every tick (1/60 [s] by default).
 func (g *Game) Update() error {
-	g.processInput() // reads user input and updates game accordingly
-
-	switch g.gameState {
-	case GameStatePlaying:
-		collided := false
-
-		for idx, a := range g.asteroids {
-			a.updatePosition()
-
-			// check if any asteroids collided with the ship
-			didCollide := g.checkCollision(&a.Entity, &g.ship.Entity)
-			if didCollide {
-				collided = true
-			}
-
-			// check if asteroid collided with other asteroids
-			otherAsteroids := make([]*Asteroid, len(g.asteroids))
-			copy(otherAsteroids, g.asteroids)
-			otherAsteroids = append(otherAsteroids[:idx], otherAsteroids[idx+1:]...)
-			for _, oA := range otherAsteroids {
-				didBounce := g.checkCollision(&a.Entity, &oA.Entity)
-				if didBounce {
-					a.bounce()
-				}
-			}
-		}
-
-		// on ship collision go to game over state
-		if collided {
-			g.showMenu(MenuGameOver)
-		}
-	}
+	g.processInput()
+	g.updateAsteroids()
 
 	return nil
 }
@@ -114,6 +85,8 @@ func (g *Game) Draw(screen *ebiten.Image) {
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return gameWidth, gameHeight
 }
+
+// === HELPER FUNCTIONS ================================================================================
 
 // loadObjects should only be called before the game is run, and is responsible for loading all game objects
 func (g *Game) loadObjects() error {
@@ -171,4 +144,85 @@ func (g *Game) checkCollision(o1 *Entity, o2 *Entity) bool {
 	rect2 := o2.getAABB().ToImageRect()
 
 	return rect1.Overlaps(rect2)
+}
+
+// processInput reads user input and updates game accordingly
+func (g *Game) processInput() {
+	switch g.gameState {
+	case GameStateMenu:
+		switch g.menuState {
+		case MenuMain:
+			if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
+				g.startGame()
+			}
+		case MenuPause:
+			if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
+				g.startGame()
+			}
+		case MenuGameOver:
+			if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
+				g.restartGame()
+			}
+		case MenuWin:
+			if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
+				g.restartGame()
+			}
+		default:
+			panic("unexpected state")
+		}
+
+	case GameStatePlaying:
+		if inpututil.IsKeyJustPressed(ebiten.KeyP) {
+			g.pauseGame()
+		}
+
+		g.pressedKeys = inpututil.AppendPressedKeys(g.pressedKeys[:0])
+
+		for _, key := range g.pressedKeys {
+			switch key {
+			case ebiten.KeyArrowUp:
+				g.ship.moveUp()
+			case ebiten.KeyArrowDown:
+				g.ship.moveDown()
+			case ebiten.KeyArrowLeft:
+				g.ship.moveLeft()
+			case ebiten.KeyArrowRight:
+				g.ship.moveRight()
+			}
+		}
+	}
+}
+
+// updateAsteroids updates the positions for objects on screen
+func (g *Game) updateAsteroids() {
+	switch g.gameState {
+	case GameStatePlaying:
+		collided := false
+
+		for idx, a := range g.asteroids {
+			a.updatePosition()
+
+			// check if any asteroids collided with the ship
+			didCollide := g.checkCollision(&a.Entity, &g.ship.Entity)
+			if didCollide {
+				collided = true
+			}
+
+			// check if asteroid collided with other asteroids
+			otherAsteroids := make([]*Asteroid, len(g.asteroids))
+			copy(otherAsteroids, g.asteroids)
+			otherAsteroids = append(otherAsteroids[:idx], otherAsteroids[idx+1:]...)
+			for _, oA := range otherAsteroids {
+				didBounce := g.checkCollision(&a.Entity, &oA.Entity)
+				if didBounce {
+					a.bounce()
+				}
+			}
+		}
+
+		// on ship collision go to game over state
+		if collided {
+			g.showMenu(MenuGameOver)
+		}
+	}
 }
