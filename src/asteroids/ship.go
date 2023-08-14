@@ -5,10 +5,11 @@ import (
 )
 
 const (
-	SHIP_START_X    = gameWidth / 2
-	SHIP_START_Y    = gameHeight / 2
-	INITIAL_SHIP_VX = 2
-	INITIAL_SHIP_VY = 2
+	SHIP_START_X      = gameWidth / 2
+	SHIP_START_Y      = gameHeight / 2
+	INITIAL_DIRECTION = 0
+	INITIAL_SHIP_VX   = 2
+	INITIAL_SHIP_VY   = 2
 )
 
 type Ship struct {
@@ -23,6 +24,7 @@ func makeShip() (*Ship, error) {
 	// set initial player position
 	ship.X = SHIP_START_X
 	ship.Y = SHIP_START_Y
+	ship.Direction = INITIAL_DIRECTION
 	ship.Vx = INITIAL_SHIP_VX
 	ship.Vy = INITIAL_SHIP_VY
 

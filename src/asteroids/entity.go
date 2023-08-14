@@ -1,16 +1,18 @@
 package asteroids
 
-import "github.com/hajimehoshi/ebiten/v2"
+import (
+	"math"
+
+	"github.com/hajimehoshi/ebiten/v2"
+)
 
 type Entity struct {
 	X         int
 	Y         int
 	Direction int
-
-	Vx int
-	Vy int
-
-	Sprite *Sprite
+	Vx        int
+	Vy        int
+	Sprite    *Sprite
 }
 
 func NewEntity() Entity {
@@ -27,6 +29,11 @@ func (e *Entity) getAABB() FloatRect {
 
 func (e *Entity) Draw(screen *ebiten.Image) {
 	var m ebiten.GeoM
+
+	// rotate the image into correct direction
+	m.Rotate(float64(e.Direction) * 2 * math.Pi / 360)
+
+	// move image to correct location
 	m.Translate(
 		float64(e.X),
 		float64(e.Y),
