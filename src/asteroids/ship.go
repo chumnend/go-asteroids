@@ -44,7 +44,7 @@ func (s *Ship) resetPosition() {
 }
 
 func (s *Ship) moveUp() {
-	newPos := s.Y - 2
+	newPos := s.Y - s.Vy
 	if newPos > 0 {
 		s.Y = newPos
 	}
@@ -52,14 +52,14 @@ func (s *Ship) moveUp() {
 
 func (s *Ship) moveDown() {
 	rect := s.getAABB()
-	newPos := s.Y + 2
+	newPos := s.Y + s.Vy
 	if newPos+int(rect.H) < gameHeight {
 		s.Y = newPos
 	}
 }
 
 func (s *Ship) moveLeft() {
-	newPos := s.X - 2
+	newPos := s.X - s.Vx
 	if newPos > 0 {
 		s.X = newPos
 	}
@@ -67,7 +67,7 @@ func (s *Ship) moveLeft() {
 
 func (s *Ship) moveRight() {
 	rect := s.getAABB()
-	newPos := s.X + 2
+	newPos := s.X + s.Vx
 	if newPos+int(rect.W) < gameWidth {
 		s.X = newPos
 	}
