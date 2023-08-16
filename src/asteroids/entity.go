@@ -9,7 +9,7 @@ import (
 type Entity struct {
 	X         int
 	Y         int
-	Direction int
+	Direction int // in degrees
 	Vx        int
 	Vy        int
 	Sprite    *Sprite
@@ -31,7 +31,7 @@ func (e *Entity) Draw(screen *ebiten.Image) {
 	var m ebiten.GeoM
 
 	// rotate the image into correct direction
-	m.Rotate(float64(e.Direction) * 2 * math.Pi / 360)
+	m.Rotate(float64(e.Direction) * math.Pi / 180)
 
 	// move image to correct location
 	m.Translate(

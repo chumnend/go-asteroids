@@ -10,6 +10,7 @@ const (
 	INITIAL_DIRECTION = 0
 	INITIAL_SHIP_VX   = 2
 	INITIAL_SHIP_VY   = 2
+	TURN_RATE         = 5
 )
 
 type Ship struct {
@@ -71,4 +72,12 @@ func (s *Ship) moveRight() {
 	if newPos+int(rect.W) < gameWidth {
 		s.X = newPos
 	}
+}
+
+func (s *Ship) rotateLeft() {
+	s.Direction -= TURN_RATE
+}
+
+func (s *Ship) rotateRight() {
+	s.Direction += TURN_RATE
 }

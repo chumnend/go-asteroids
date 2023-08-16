@@ -180,14 +180,18 @@ func (g *Game) processInput() {
 
 		for _, key := range g.pressedKeys {
 			switch key {
-			case ebiten.KeyArrowUp:
+			case ebiten.KeyW:
 				g.ship.moveUp()
-			case ebiten.KeyArrowDown:
+			case ebiten.KeyS:
 				g.ship.moveDown()
-			case ebiten.KeyArrowLeft:
+			case ebiten.KeyA:
 				g.ship.moveLeft()
-			case ebiten.KeyArrowRight:
+			case ebiten.KeyD:
 				g.ship.moveRight()
+			case ebiten.KeyQ:
+				g.ship.rotateLeft()
+			case ebiten.KeyE:
+				g.ship.rotateRight()
 			}
 		}
 	}
