@@ -29,6 +29,7 @@ const (
 type Game struct {
 	ship      *Ship
 	asteroids []*Asteroid
+	bullet    *Bullet
 
 	gameState GameState
 	menuState MenuState
@@ -75,6 +76,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		g.drawMenu(screen)
 	case GameStatePlaying:
 		g.ship.Draw(screen)
+		g.bullet.Draw(screen)
 		for _, a := range g.asteroids {
 			a.Draw(screen)
 		}
@@ -103,6 +105,13 @@ func (g *Game) loadObjects() error {
 		return err
 	}
 	g.asteroids = asteroids
+
+	// load bullet asset
+	bullet, err := makeBullet()
+	if err != nil {
+		return err
+	}
+	g.bullet = bullet
 
 	return nil
 }
@@ -192,6 +201,8 @@ func (g *Game) processInput() {
 				g.ship.rotateLeft()
 			case ebiten.KeyE:
 				g.ship.rotateRight()
+			case ebiten.KeyJ:
+				g.shoot()
 			}
 		}
 	}
@@ -229,4 +240,8 @@ func (g *Game) updateAsteroids() {
 			g.showMenu(MenuGameOver)
 		}
 	}
+}
+
+func (g *Game) shoot() {
+	g.bullet.IsHidden = false
 }

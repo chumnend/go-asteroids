@@ -13,6 +13,7 @@ type Entity struct {
 	Vx        int
 	Vy        int
 	Sprite    *Sprite
+	IsHidden  bool
 }
 
 func NewEntity() Entity {
@@ -28,6 +29,11 @@ func (e *Entity) getAABB() FloatRect {
 }
 
 func (e *Entity) Draw(screen *ebiten.Image) {
+	// if object is hidden do not draw
+	if e.IsHidden {
+		return
+	}
+
 	var m ebiten.GeoM
 
 	// rotate the image into correct direction

@@ -16,6 +16,7 @@ func makeBullet() (*Bullet, error) {
 	bullet.Y = 0
 	bullet.Vx = 0
 	bullet.Vy = 1
+	bullet.IsHidden = true
 
 	// load the player sprite
 	img, _, err := ebitenutil.NewImageFromFile("src/assets/sprites/BULLET.png")
