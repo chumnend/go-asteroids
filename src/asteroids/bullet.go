@@ -11,11 +11,7 @@ func makeBullet() (*Bullet, error) {
 		Entity: NewEntity(),
 	}
 
-	// set initial bullet position
-	bullet.X = 0
-	bullet.Y = 0
-	bullet.Vx = 0
-	bullet.Vy = 1
+	// make sure bullets are hidden initially
 	bullet.IsHidden = true
 
 	// load the player sprite
@@ -26,4 +22,9 @@ func makeBullet() (*Bullet, error) {
 	bullet.Sprite = NewSprite(img)
 
 	return bullet, nil
+}
+
+func (b *Bullet) updatePosition() {
+	b.X += b.Vx
+	b.Y -= b.Vy
 }

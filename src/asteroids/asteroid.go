@@ -42,21 +42,6 @@ func makeAsteroid() (*Asteroid, error) {
 	return asteroid, nil
 }
 
-func makeAsteroids() ([]*Asteroid, error) {
-	numberOfAsteroids := INITIAL_NUMBER_OF_ASTEROIDS
-	asteroids := make([]*Asteroid, 0)
-
-	for i := 0; i < numberOfAsteroids; i++ {
-		asteroid, err := makeAsteroid()
-		if err != nil {
-			return nil, err
-		}
-		asteroids = append(asteroids, asteroid)
-	}
-
-	return asteroids, nil
-}
-
 func (a *Asteroid) updatePosition() {
 	rect := a.getAABB()
 

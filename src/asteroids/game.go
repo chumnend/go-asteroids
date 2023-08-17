@@ -64,6 +64,7 @@ func (g *Game) Init() error {
 func (g *Game) Update() error {
 	g.processInput()
 	g.updateAsteroids()
+	g.updateBullet()
 
 	return nil
 }
@@ -202,10 +203,25 @@ func (g *Game) processInput() {
 			case ebiten.KeyE:
 				g.ship.rotateRight()
 			case ebiten.KeyJ:
-				g.shoot()
+				g.shootBullet()
 			}
 		}
 	}
+}
+
+func makeAsteroids() ([]*Asteroid, error) {
+	numberOfAsteroids := INITIAL_NUMBER_OF_ASTEROIDS
+	asteroids := make([]*Asteroid, 0)
+
+	for i := 0; i < numberOfAsteroids; i++ {
+		asteroid, err := makeAsteroid()
+		if err != nil {
+			return nil, err
+		}
+		asteroids = append(asteroids, asteroid)
+	}
+
+	return asteroids, nil
 }
 
 // updateAsteroids updates the positions for objects on screen
@@ -242,6 +258,16 @@ func (g *Game) updateAsteroids() {
 	}
 }
 
-func (g *Game) shoot() {
+func (g *Game) shootBullet() {
+	g.bullet.X = g.ship.X + g.bullet.Sprite.GetTextureRect().Dx()/2
+	g.bullet.Y = g.ship.Y + g.bullet.Sprite.GetTextureRect().Dy()/2
+	g.bullet.Vy = 5
 	g.bullet.IsHidden = false
+}
+
+func (g *Game) updateBullet() {
+	switch g.gameState {
+	case GameStatePlaying:
+		g.bullet.updatePosition()
+	}
 }
