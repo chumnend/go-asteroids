@@ -7,7 +7,7 @@ import (
 const (
 	SHIP_START_X      = gameWidth / 2
 	SHIP_START_Y      = gameHeight / 2
-	INITIAL_DIRECTION = 0
+	INITIAL_DIRECTION = 0 // degrees
 	INITIAL_SHIP_VX   = 2
 	INITIAL_SHIP_VY   = 2
 	TURN_RATE         = 5

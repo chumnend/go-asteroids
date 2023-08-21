@@ -8,8 +8,8 @@ type Entity struct {
 	X         int
 	Y         int
 	Direction int // in degrees
-	Vx        int
-	Vy        int
+	Vx        int // pixel per draw
+	Vy        int // pixel per draw
 	Sprite    *Sprite
 	IsHidden  bool
 }

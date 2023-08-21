@@ -259,10 +259,9 @@ func (g *Game) updateAsteroids() {
 }
 
 func (g *Game) shootBullet() {
-	g.bullet.X = g.ship.X + g.bullet.Sprite.GetTextureRect().Dx()/2
-	g.bullet.Y = g.ship.Y + g.bullet.Sprite.GetTextureRect().Dy()/2
-	g.bullet.Vy = 5
-	g.bullet.IsHidden = false
+	g.bullet.setPosition(g.ship.X+g.bullet.Sprite.GetTextureRect().Dx()/2, g.ship.Y+g.bullet.Sprite.GetTextureRect().Dy()/2)
+	g.bullet.setDirection(g.ship.Direction)
+	g.bullet.show()
 }
 
 func (g *Game) updateBullet() {
