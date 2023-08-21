@@ -3,6 +3,7 @@ package asteroids
 import (
 	"fmt"
 	"image"
+	"math"
 )
 
 type Vec2f struct {
@@ -23,4 +24,12 @@ func (r FloatRect) ToImageRect() image.Rectangle {
 
 func (r FloatRect) Corners() (float64, float64, float64, float64) {
 	return r.X, r.Y, r.X + r.W, r.Y + r.H
+}
+
+func degreeToRad(deg float64) float64 {
+	return deg * math.Pi / 180
+}
+
+func radToDegree(rad float64) float64 {
+	return rad * 180 / math.Pi
 }

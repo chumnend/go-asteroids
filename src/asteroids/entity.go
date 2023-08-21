@@ -1,8 +1,6 @@
 package asteroids
 
 import (
-	"math"
-
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -37,7 +35,7 @@ func (e *Entity) Draw(screen *ebiten.Image) {
 	var m ebiten.GeoM
 
 	// rotate the image into correct direction
-	m.Rotate(float64(e.Direction) * math.Pi / 180)
+	m.Rotate(degreeToRad(float64(e.Direction)))
 
 	// move image to correct location
 	m.Translate(
