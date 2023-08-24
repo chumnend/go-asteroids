@@ -1,8 +1,9 @@
 package asteroids
 
 import (
+	"log"
+
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 const (
@@ -17,29 +18,43 @@ const (
 // Game implements the ebiten.Game interface
 type Game struct{}
 
-// Init loads all resources for the game
-func (g *Game) Init() error {
-	return nil
-}
-
 // NewGame returns a Game struct, the width of the window and the height of the window
 func NewGame() (*Game, int, int) {
 	return &Game{}, WINDOW_WIDTH, WINDOW_HEIGHT
 }
 
+// Init loads all resources for the game
+func (game *Game) Init() error {
+	if err := game.loadObjects(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // Update proceeds the game state.
 // Update is called every tick (1/60 [s] by default).
-func (g *Game) Update() error {
+func (game *Game) Update() error {
+	if err := game.handleInput(); err != nil {
+		return err
+	}
+
+	if err := game.processLogic(); err != nil {
+		return err
+	}
+
 	return nil
 }
 
 // Draw draws the game screen.
 // Draw is called every frame (typically 1/60[s] for 60Hz display).
-func (g *Game) Draw(screen *ebiten.Image) {
-	ebitenutil.DebugPrint(screen, "Hello, World!")
+func (game *Game) Draw(screen *ebiten.Image) {
+	if err := game.drawObjects(); err != nil {
+		log.Fatal(err)
+	}
 }
 
 // Layout takes the outside size (e.g., the window size) and returns the (logical) screen size.
-func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
+func (game *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return GAME_WIDTH, GAME_HEIGHT
 }
