@@ -3,11 +3,15 @@ package asteroids
 import (
 	"errors"
 	"fmt"
-	"log"
+	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/examples/resources/fonts"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
+	"github.com/hajimehoshi/ebiten/v2/text"
+	"golang.org/x/image/font"
+	"golang.org/x/image/font/opentype"
 )
 
 const (
@@ -32,13 +36,49 @@ const (
 	MenuMain MenuState = iota
 	MenuPause
 	MenuGameOver
+	MenuWin
 )
+
+var (
+	DPI           = 72
+	FONT_SIZE     = 8
+	MENU_BG_COLOR = color.RGBA{72, 170, 182, 200}
+	TEXT_COLOR    = color.RGBA{34, 32, 32, 255}
+)
+
+type textItem struct {
+	text  string
+	posY  int
+	color color.Color
+}
+
+var mainMenuTexts = []textItem{
+	{"Ebiten Asteroids", GAME_HEIGHT / 2, TEXT_COLOR},
+	{"Press Space to start", GAME_HEIGHT/2 + FONT_SIZE*2, TEXT_COLOR},
+}
+
+var pauseTexts = []textItem{
+	{"PAUSED", GAME_HEIGHT / 2, TEXT_COLOR},
+	{"Press Space to continue", GAME_HEIGHT/2 + FONT_SIZE*2, TEXT_COLOR},
+}
+
+var gameOverTexts = []textItem{
+	{"Game Over", GAME_HEIGHT / 2, TEXT_COLOR},
+	{"Press Space to replay", GAME_HEIGHT/2 + FONT_SIZE*2, TEXT_COLOR},
+}
+
+var wonTexts = []textItem{
+	{"You Won!", GAME_HEIGHT / 2, TEXT_COLOR},
+	{"Press Space to replay", GAME_HEIGHT/2 + FONT_SIZE*2, TEXT_COLOR},
+}
 
 // Game implements the ebiten.Game interface
 type Game struct {
 	gameState   GameState
 	menuState   MenuState
 	pressedKeys []ebiten.Key
+
+	font font.Face
 }
 
 // NewGame returns a Game struct, the width of the window and the height of the window
@@ -48,6 +88,10 @@ func NewGame() (*Game, int, int) {
 
 // Init loads all resources for the game
 func (game *Game) Init() error {
+	if err := game.loadMenuResources(); err != nil {
+		return err
+	}
+
 	if err := game.loadObjects(); err != nil {
 		return err
 	}
@@ -72,8 +116,10 @@ func (game *Game) Update() error {
 // Draw draws the game screen.
 // Draw is called every frame (typically 1/60[s] for 60Hz display).
 func (game *Game) Draw(screen *ebiten.Image) {
-	if err := game.drawObjects(); err != nil {
-		log.Fatal(err)
+	switch game.gameState {
+	case GameStateMenu:
+		game.drawMenuScreen(screen)
+	case GameStatePlaying:
 	}
 
 	// debug info
@@ -92,10 +138,34 @@ func (game *Game) loadObjects() error {
 	return nil
 }
 
+func (game *Game) loadMenuResources() error {
+	// load the font type
+	tt, err := opentype.Parse(fonts.PressStart2P_ttf)
+	if err != nil {
+		return err
+	}
+
+	tf, err := opentype.NewFace(tt, &opentype.FaceOptions{
+		Size:    float64(FONT_SIZE),
+		DPI:     float64(DPI),
+		Hinting: font.HintingFull,
+	})
+	if err != nil {
+		return err
+	}
+
+	game.font = tf
+
+	return nil
+}
+
 // HANDLE INPUT ===================================================================================
 
 // handleInput reads key inputs and performs actions
 func (game *Game) handleInput() error {
+	// get pressed keys
+	game.pressedKeys = inpututil.AppendPressedKeys(game.pressedKeys[:0])
+
 	// force game end
 	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
 		return ebiten.Termination
@@ -119,7 +189,6 @@ func (game *Game) handleInput() error {
 		if inpututil.IsKeyJustPressed(ebiten.KeyP) {
 			game.pauseGame()
 		}
-		game.pressedKeys = inpututil.AppendPressedKeys(game.pressedKeys[:0])
 	default:
 		return errors.New("unexpected game state")
 	}
@@ -149,9 +218,28 @@ func (game *Game) processLogic() error {
 
 // PAINT SCREEN ===================================================================================
 
-// drawObjects redraws all objects on the screen
-func (game *Game) drawObjects() error {
-	return nil
+func (g *Game) drawMenuScreen(screen *ebiten.Image) {
+	ebitenutil.DrawRect(screen, 0, 0, GAME_WIDTH, GAME_HEIGHT, MENU_BG_COLOR)
+
+	// get the text items based on menu state
+	var texts []textItem
+	switch g.menuState {
+	case MenuMain:
+		texts = mainMenuTexts
+	case MenuPause:
+		texts = pauseTexts
+	case MenuGameOver:
+		texts = gameOverTexts
+	case MenuWin:
+		texts = wonTexts
+	default:
+		panic("unexpected state")
+	}
+
+	// draw each text item to the screen
+	for _, ti := range texts {
+		text.Draw(screen, ti.text, g.font, GAME_WIDTH/2.-len(ti.text)/2.*FONT_SIZE, ti.posY, ti.color)
+	}
 }
 
 func (game *Game) printDebugInfo(screen *ebiten.Image) {
@@ -171,7 +259,9 @@ func (game *Game) printDebugInfo(screen *ebiten.Image) {
 		currentMenuState = "Paused"
 	case MenuGameOver:
 		currentMenuState = "Game Over"
+	case MenuWin:
+		currentMenuState = "Win"
 	}
 
-	ebitenutil.DebugPrint(screen, fmt.Sprintf("State: %v\nMenu: %v\nKeys: %v", currentGameState, currentMenuState, game.pressedKeys))
+	ebitenutil.DebugPrint(screen, fmt.Sprintf("State: %v   Menu: %v\nKeys: %v", currentGameState, currentMenuState, game.pressedKeys))
 }
