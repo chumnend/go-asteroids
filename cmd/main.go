@@ -14,8 +14,7 @@ func main() {
 	}
 
 	ebiten.SetWindowSize(w, h)
-	ebiten.SetWindowTitle("Asteroids")
-	ebiten.SetWindowResizable(false)
+	ebiten.SetWindowTitle("Asteroids - Made With Go")
 	if err := ebiten.RunGame(g); err != nil {
 		log.Fatal(err)
 	}
