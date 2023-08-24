@@ -36,8 +36,9 @@ const (
 
 // Game implements the ebiten.Game interface
 type Game struct {
-	gameState GameState
-	menuState MenuState
+	gameState   GameState
+	menuState   MenuState
+	pressedKeys []ebiten.Key
 }
 
 // NewGame returns a Game struct, the width of the window and the height of the window
@@ -118,6 +119,7 @@ func (game *Game) handleInput() error {
 		if inpututil.IsKeyJustPressed(ebiten.KeyP) {
 			game.pauseGame()
 		}
+		game.pressedKeys = inpututil.AppendPressedKeys(game.pressedKeys[:0])
 	default:
 		return errors.New("unexpected game state")
 	}
@@ -153,5 +155,23 @@ func (game *Game) drawObjects() error {
 }
 
 func (game *Game) printDebugInfo(screen *ebiten.Image) {
-	ebitenutil.DebugPrint(screen, fmt.Sprintf("State: %v\nMenu: %v", game.gameState, game.menuState))
+	var currentGameState string
+	switch game.gameState {
+	case GameStateMenu:
+		currentGameState = "Menu"
+	case GameStatePlaying:
+		currentGameState = "Playing"
+	}
+
+	var currentMenuState string
+	switch game.menuState {
+	case MenuMain:
+		currentMenuState = "Main Menu"
+	case MenuPause:
+		currentMenuState = "Paused"
+	case MenuGameOver:
+		currentMenuState = "Game Over"
+	}
+
+	ebitenutil.DebugPrint(screen, fmt.Sprintf("State: %v\nMenu: %v\nKeys: %v", currentGameState, currentMenuState, game.pressedKeys))
 }
