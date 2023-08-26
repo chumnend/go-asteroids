@@ -215,6 +215,9 @@ func (game *Game) resumeGame() {
 
 // PROCESS GAME LOGIC =============================================================================
 
+// checkCollisions checks for any objects that are colliding
+func (game *Game) checkCollisions() {}
+
 // processLogic updates all game objects each frame
 func (game *Game) processLogic() error {
 	return nil
