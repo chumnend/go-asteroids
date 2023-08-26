@@ -82,6 +82,9 @@ type Game struct {
 	menuState   MenuState
 	pressedKeys []ebiten.Key
 
+	ship     *Ship
+	asteroid *Asteroid
+
 	font font.Face
 }
 
@@ -124,6 +127,7 @@ func (game *Game) Draw(screen *ebiten.Image) {
 	case GameStateMenu:
 		game.drawMenuScreen(screen)
 	case GameStatePlaying:
+		game.drawObjects(screen)
 	}
 
 	// debug info
@@ -139,6 +143,20 @@ func (game *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 
 // loadObjects loads all required assets for the game
 func (game *Game) loadObjects() error {
+	// load ship
+	ship, err := NewShip()
+	if err != nil {
+		return err
+	}
+	game.ship = ship
+
+	// load asteroids
+	asteroid, err := NewAsteroid()
+	if err != nil {
+		return err
+	}
+	game.asteroid = asteroid
+
 	return nil
 }
 
@@ -247,6 +265,11 @@ func (g *Game) drawMenuScreen(screen *ebiten.Image) {
 	for _, ti := range texts {
 		text.Draw(screen, ti.text, g.font, GAME_WIDTH/2.-len(ti.text)/2.*FONT_SIZE, ti.height, ti.color)
 	}
+}
+
+func (game *Game) drawObjects(screen *ebiten.Image) {
+	game.ship.Draw(screen)
+	game.asteroid.Draw(screen)
 }
 
 func (game *Game) printDebugInfo(screen *ebiten.Image) {

@@ -5,7 +5,7 @@ import "github.com/hajimehoshi/ebiten/v2"
 type Entity struct {
 	position Vector2
 	velocity Vector2
-	sprite   Sprite
+	sprite   *Sprite
 	isHidden bool
 }
 
@@ -23,10 +23,6 @@ func (e *Entity) CollidesWith(obj *Entity) bool {
 	rect1 := e.GetBoundingRect().ToImageRect()
 	rect2 := obj.GetBoundingRect().ToImageRect()
 	return rect1.Overlaps(rect2)
-}
-
-func (e *Entity) Move() {
-	e.position = e.position.Add(e.velocity)
 }
 
 func (e *Entity) Draw(screen *ebiten.Image) {
