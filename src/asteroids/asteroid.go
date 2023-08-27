@@ -27,9 +27,7 @@ func NewAsteroid() (*Asteroid, error) {
 	}
 
 	// set initial asteroid parameters
-	asteroid.GetRandomPosition()
-	asteroid.velocity.X = INITIAL_ASTEROID_VX
-	asteroid.velocity.Y = INITIAL_ASTEROID_VY
+	asteroid.Initialize()
 
 	return asteroid, nil
 }
@@ -39,4 +37,25 @@ func (asteroid *Asteroid) GetRandomPosition() {
 	randY := rand.Intn(GAME_HEIGHT - int(asteroid.sprite.GetSize().Y))
 	asteroid.position.X = float64(randX)
 	asteroid.position.Y = float64(randY)
+}
+
+func (asteroid *Asteroid) Initialize() {
+	asteroid.GetRandomPosition()
+	asteroid.velocity.X = INITIAL_ASTEROID_VX
+	asteroid.velocity.Y = INITIAL_ASTEROID_VY
+
+}
+
+func (asteroid *Asteroid) Update() {
+	rect := asteroid.GetBoundingRect()
+
+	asteroid.position.X += asteroid.velocity.X
+	if asteroid.position.X+rect.W >= GAME_WIDTH || asteroid.position.X <= 0 {
+		asteroid.velocity.X *= -1
+	}
+
+	asteroid.position.Y += asteroid.velocity.Y
+	if asteroid.position.Y+rect.H >= GAME_HEIGHT || asteroid.position.Y <= 0 {
+		asteroid.velocity.Y *= -1
+	}
 }

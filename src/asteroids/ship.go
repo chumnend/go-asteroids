@@ -27,11 +27,17 @@ func NewShip() (*Ship, error) {
 	}
 
 	// set initial ship parameters
+	ship.Initialize()
+
+	return ship, nil
+}
+
+func (ship *Ship) Initialize() {
 	ship.position.X = SHIP_START_X
 	ship.position.Y = SHIP_START_Y
 	ship.Direction = INITIAL_DIRECTION
 	ship.velocity.X = INITIAL_SHIP_VX
 	ship.velocity.Y = INITIAL_SHIP_VY
-
-	return ship, nil
 }
+
+func (ship *Ship) Update() {}

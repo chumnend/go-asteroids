@@ -208,6 +208,10 @@ func (game *Game) handleInput() error {
 			if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
 				game.resumeGame()
 			}
+		case MenuStateGameOver:
+			if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
+				game.restartGame()
+			}
 		default:
 			return errors.New("unexpected menu state")
 		}
@@ -235,13 +239,39 @@ func (game *Game) resumeGame() {
 	game.gameState = GameStatePlaying
 }
 
+func (game *Game) restartGame() {
+	// reset game object parameters
+	game.ship.Initialize()
+	game.asteroid.Initialize()
+
+	game.gameState = GameStateMenu
+	game.menuState = MenuStateMain
+}
+
+func (game *Game) gameOver() {
+	game.gameState = GameStateMenu
+	game.menuState = MenuStateGameOver
+}
+
 // PROCESS GAME LOGIC =============================================================================
 
 // checkCollisions checks for any objects that are colliding
-func (game *Game) checkCollisions() {}
+func (game *Game) checkCollisions() {
+	// on ship collision with any asteroids, end the game
+	if game.ship.CollidesWith(&game.asteroid.Entity) {
+		game.gameOver()
+	}
+
+}
 
 // processLogic updates all game objects each frame
 func (game *Game) processLogic() error {
+	if game.gameState == GameStatePlaying {
+		game.ship.Update()
+		game.asteroid.Update()
+		game.checkCollisions()
+	}
+
 	return nil
 }
 
