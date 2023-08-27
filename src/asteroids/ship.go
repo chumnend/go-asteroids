@@ -26,7 +26,7 @@ func NewShip() (*Ship, error) {
 		return nil, err
 	}
 
-	// set initial player position
+	// set initial ship parameters
 	ship.position.X = SHIP_START_X
 	ship.position.Y = SHIP_START_Y
 	ship.Direction = INITIAL_DIRECTION

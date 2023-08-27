@@ -82,10 +82,10 @@ type Game struct {
 	menuState   MenuState
 	pressedKeys []ebiten.Key
 
+	font font.Face
+
 	ship     *Ship
 	asteroid *Asteroid
-
-	font font.Face
 }
 
 // NewGame returns a Game struct, the width of the window and the height of the window
@@ -150,10 +150,14 @@ func (game *Game) loadObjects() error {
 	}
 	game.ship = ship
 
-	// load asteroids
+	// load asteroid
 	asteroid, err := NewAsteroid()
 	if err != nil {
 		return err
+	}
+	// make sure asteroid does not spawn on ship initially
+	for asteroid.CollidesWith(&ship.Entity) {
+		asteroid.GetRandomPosition()
 	}
 	game.asteroid = asteroid
 
