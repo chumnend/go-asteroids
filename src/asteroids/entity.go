@@ -3,10 +3,12 @@ package asteroids
 import "github.com/hajimehoshi/ebiten/v2"
 
 type Entity struct {
-	position Vector2
-	velocity Vector2
-	sprite   *Sprite
-	isHidden bool
+	position    Vector2
+	velocity    Vector2
+	direction   float64 // in degrees
+	sprite      *Sprite
+	isHidden    bool
+	isRotatable bool
 }
 
 func NewEntity() Entity {
@@ -34,7 +36,9 @@ func (e *Entity) Draw(screen *ebiten.Image) {
 	var m ebiten.GeoM
 
 	// rotate the image into correct direction
-	// m.Rotate(degreeToRad(float64(e.Direction)))
+	if e.isRotatable {
+		m.Rotate(degreeToRad(float64(e.direction)))
+	}
 
 	// move image to correct location
 	m.Translate(

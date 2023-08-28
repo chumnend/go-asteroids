@@ -219,6 +219,17 @@ func (game *Game) handleInput() error {
 		if inpututil.IsKeyJustPressed(ebiten.KeyP) {
 			game.pauseGame()
 		}
+
+		for _, key := range game.pressedKeys {
+			switch key {
+			case ebiten.KeyW:
+			case ebiten.KeyS:
+			case ebiten.KeyA:
+				game.ship.rotate(false) // rotate counter clockwise
+			case ebiten.KeyD:
+				game.ship.rotate(true) // rotate clockwise
+			}
+		}
 	default:
 		return errors.New("unexpected game state")
 	}

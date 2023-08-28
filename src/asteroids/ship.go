@@ -1,17 +1,16 @@
 package asteroids
 
 const (
-	SHIP_START_X      = GAME_WIDTH / 2
-	SHIP_START_Y      = GAME_HEIGHT / 2
-	INITIAL_DIRECTION = 0 // radians
-	INITIAL_SHIP_VX   = 0
-	INITIAL_SHIP_VY   = 0
-	TURN_RATE         = 5
+	INITIAL_SHIP_X            = GAME_WIDTH / 2
+	INITIAL_SHIP_Y            = GAME_HEIGHT / 2
+	INITIAL_SHIP_VX           = 0
+	INITIAL_SHIP_VY           = 0
+	INITIAL_DIRECTION_DEGREES = 0
+	TURN_RATE                 = 3 // represents angle in degrees
 )
 
 type Ship struct {
 	Entity
-	Direction float64
 }
 
 func NewShip() (*Ship, error) {
@@ -28,16 +27,25 @@ func NewShip() (*Ship, error) {
 
 	// set initial ship parameters
 	ship.Initialize()
+	ship.isRotatable = true
 
 	return ship, nil
 }
 
+func (ship *Ship) rotate(clockwise bool) {
+	sign := 1.
+	if !clockwise {
+		sign *= -1
+	}
+	ship.direction += sign * float64(TURN_RATE)
+}
+
 func (ship *Ship) Initialize() {
-	ship.position.X = SHIP_START_X
-	ship.position.Y = SHIP_START_Y
-	ship.Direction = INITIAL_DIRECTION
+	ship.position.X = INITIAL_SHIP_X
+	ship.position.Y = INITIAL_SHIP_Y
 	ship.velocity.X = INITIAL_SHIP_VX
 	ship.velocity.Y = INITIAL_SHIP_VY
+	ship.direction = INITIAL_DIRECTION_DEGREES
 }
 
 func (ship *Ship) Update() {}
