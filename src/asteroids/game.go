@@ -225,9 +225,9 @@ func (game *Game) handleInput() error {
 			case ebiten.KeyW:
 			case ebiten.KeyS:
 			case ebiten.KeyA:
-				game.ship.rotate(false) // rotate counter clockwise
+				game.ship.Rotate(false) // rotate counter clockwise
 			case ebiten.KeyD:
-				game.ship.rotate(true) // rotate clockwise
+				game.ship.Rotate(true) // rotate clockwise
 			}
 		}
 	default:

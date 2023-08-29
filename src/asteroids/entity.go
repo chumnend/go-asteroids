@@ -3,12 +3,12 @@ package asteroids
 import "github.com/hajimehoshi/ebiten/v2"
 
 type Entity struct {
-	position    Vector2
-	velocity    Vector2
-	direction   float64 // in degrees
-	sprite      *Sprite
-	isHidden    bool
-	isRotatable bool
+	Position    Vector2
+	Velocity    Vector2
+	Direction   float64 // in degrees
+	Sprite      *Sprite
+	IsHidden    bool
+	IsRotatable bool
 }
 
 func NewEntity() Entity {
@@ -16,9 +16,9 @@ func NewEntity() Entity {
 }
 
 func (e *Entity) GetBoundingRect() Rectangle {
-	w := e.sprite.GetSize().X
-	h := e.sprite.GetSize().Y
-	return Rectangle{float64(e.position.X), float64(e.position.Y), w, h}
+	w := e.Sprite.GetSize().X
+	h := e.Sprite.GetSize().Y
+	return Rectangle{float64(e.Position.X), float64(e.Position.Y), w, h}
 }
 
 func (e *Entity) CollidesWith(obj *Entity) bool {
@@ -29,21 +29,21 @@ func (e *Entity) CollidesWith(obj *Entity) bool {
 
 func (e *Entity) Draw(screen *ebiten.Image) {
 	// if object is hidden do not draw
-	if e.isHidden {
+	if e.IsHidden {
 		return
 	}
 
 	var m ebiten.GeoM
 
-	// rotate the image into correct direction
-	if e.isRotatable {
-		m.Rotate(degreeToRad(float64(e.direction)))
+	// rotate the image into correct Direction
+	if e.IsRotatable {
+		m.Rotate(degreeToRad(float64(e.Direction)))
 	}
 
 	// move image to correct location
 	m.Translate(
-		float64(e.position.X),
-		float64(e.position.Y),
+		float64(e.Position.X),
+		float64(e.Position.Y),
 	)
-	e.sprite.Draw(screen, m)
+	e.Sprite.Draw(screen, m)
 }

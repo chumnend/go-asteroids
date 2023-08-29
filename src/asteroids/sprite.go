@@ -8,16 +8,16 @@ import (
 )
 
 type Sprite struct {
-	texture *ebiten.Image // fill spritesheet
-	image   *ebiten.Image // portion of spritesheet to show
-	mirrorX bool
-	mirrorY bool
+	Texture *ebiten.Image // fill spritesheet
+	Image   *ebiten.Image // portion of spritesheet to show
+	MirrorX bool
+	MirrorY bool
 }
 
 func NewSprite(img *ebiten.Image) *Sprite {
 	return &Sprite{
-		texture: img,
-		image:   img,
+		Texture: img,
+		Image:   img,
 	}
 }
 
@@ -33,17 +33,17 @@ func NewSpriteFromImagePath(path string) (*Sprite, error) {
 }
 
 func (s *Sprite) SetTextureRect(rect image.Rectangle) {
-	s.image = s.texture.SubImage(rect).(*ebiten.Image)
+	s.Image = s.Texture.SubImage(rect).(*ebiten.Image)
 }
 
 func (s *Sprite) GetTextureRect() image.Rectangle {
-	return s.image.Bounds()
+	return s.Image.Bounds()
 }
 
 func (s *Sprite) GetSize() Vector2 {
 	return Vector2{
-		X: float64(s.image.Bounds().Dx()), // width
-		Y: float64(s.image.Bounds().Dy()), // height
+		X: float64(s.Image.Bounds().Dx()), // width
+		Y: float64(s.Image.Bounds().Dy()), // height
 	}
 }
 
@@ -53,11 +53,11 @@ func (s *Sprite) Draw(screen *ebiten.Image, parentM ebiten.GeoM) {
 
 	imageSize := s.GetSize()
 
-	if s.mirrorX {
+	if s.MirrorX {
 		scale.X = -1
 		offset.X = float64(imageSize.X)
 	}
-	if s.mirrorY {
+	if s.MirrorY {
 		scale.Y = -1
 		offset.Y = float64(imageSize.Y)
 	}
@@ -67,5 +67,5 @@ func (s *Sprite) Draw(screen *ebiten.Image, parentM ebiten.GeoM) {
 	op.GeoM.Translate(offset.X, offset.Y)
 	op.GeoM.Concat(parentM)
 
-	screen.DrawImage(s.image, op)
+	screen.DrawImage(s.Image, op)
 }
