@@ -223,7 +223,9 @@ func (game *Game) handleInput() error {
 		for _, key := range game.pressedKeys {
 			switch key {
 			case ebiten.KeyW:
+				game.ship.Accelerate()
 			case ebiten.KeyS:
+				game.ship.Decelerate()
 			case ebiten.KeyA:
 				game.ship.Rotate(false) // rotate counter clockwise
 			case ebiten.KeyD:

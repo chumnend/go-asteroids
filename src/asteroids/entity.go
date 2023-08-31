@@ -5,7 +5,7 @@ import "github.com/hajimehoshi/ebiten/v2"
 type Entity struct {
 	Position    Vector2
 	Velocity    Vector2
-	Direction   float64 // in degrees
+	Direction   float64 // in degrees, we assume 0 is up
 	Sprite      *Sprite
 	IsHidden    bool
 	IsRotatable bool
@@ -37,7 +37,7 @@ func (e *Entity) Draw(screen *ebiten.Image) {
 
 	// rotate the image into correct Direction
 	if e.IsRotatable {
-		m.Translate(-float64(e.Sprite.GetSize().X)/2, -float64(e.Sprite.GetSize().Y)/2)
+		m.Translate(-float64(e.Sprite.GetSize().X)/2, -float64(e.Sprite.GetSize().Y)/2) // Move the image's center to the screen's upper-left corner.
 		m.Rotate(degreeToRad(float64(e.Direction)))
 	}
 
