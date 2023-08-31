@@ -37,6 +37,7 @@ func (e *Entity) Draw(screen *ebiten.Image) {
 
 	// rotate the image into correct Direction
 	if e.IsRotatable {
+		m.Translate(-float64(e.Sprite.GetSize().X)/2, -float64(e.Sprite.GetSize().Y)/2)
 		m.Rotate(degreeToRad(float64(e.Direction)))
 	}
 
