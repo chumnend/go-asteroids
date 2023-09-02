@@ -340,5 +340,5 @@ func (game *Game) printDebugInfo(screen *ebiten.Image) {
 		currentMenuState = "Win"
 	}
 
-	ebitenutil.DebugPrint(screen, fmt.Sprintf("State: %v   Menu: %v\nKeys: %v", currentGameState, currentMenuState, game.pressedKeys))
+	ebitenutil.DebugPrint(screen, fmt.Sprintf("State: %v   Menu: %v\nKeys: %v\nShip X:%v Y:%v Vx: %v Vy: %v", currentGameState, currentMenuState, game.pressedKeys, game.ship.Position.X, game.ship.Position.Y, game.ship.Velocity.X, game.ship.Velocity.Y))
 }
