@@ -75,7 +75,14 @@ func (ship *Ship) Rotate(clockwise bool) {
 	if !clockwise {
 		sign *= -1
 	}
-	ship.Direction += sign * float64(TURN_RATE)
+
+	newDir := ship.Direction + sign*float64(TURN_RATE)
+	newDir = math.Mod(newDir, 360)
+	if newDir < 0 {
+		newDir += 360
+	}
+
+	ship.Direction = newDir
 }
 
 func (ship *Ship) Initialize() {
