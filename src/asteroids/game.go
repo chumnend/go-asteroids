@@ -223,9 +223,9 @@ func (game *Game) handleInput() error {
 		for _, key := range game.pressedKeys {
 			switch key {
 			case ebiten.KeyW:
-				game.ship.Accelerate()
+				game.ship.Accelerate(false)
 			case ebiten.KeyS:
-				game.ship.Decelerate()
+				game.ship.Accelerate(true)
 			case ebiten.KeyA:
 				game.ship.Rotate(false) // rotate counter clockwise
 			case ebiten.KeyD:
@@ -340,5 +340,5 @@ func (game *Game) printDebugInfo(screen *ebiten.Image) {
 		currentMenuState = "Win"
 	}
 
-	ebitenutil.DebugPrint(screen, fmt.Sprintf("State: %v   Menu: %v\nKeys: %v\nShip X:%v Y:%v Vx: %v Vy: %v", currentGameState, currentMenuState, game.pressedKeys, game.ship.Position.X, game.ship.Position.Y, game.ship.Velocity.X, game.ship.Velocity.Y))
+	ebitenutil.DebugPrint(screen, fmt.Sprintf("State: %v   Menu: %v\nKeys: %v\nShip X:%.0f Y:%.0f Vx: %.1f Vy: %.1f Dir: %.1f", currentGameState, currentMenuState, game.pressedKeys, game.ship.Position.X, game.ship.Position.Y, game.ship.Velocity.X, game.ship.Velocity.Y, game.ship.Direction))
 }

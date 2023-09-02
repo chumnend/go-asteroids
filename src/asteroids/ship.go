@@ -1,13 +1,15 @@
 package asteroids
 
+import "math"
+
 const (
 	INITIAL_SHIP_X            = GAME_WIDTH / 2
 	INITIAL_SHIP_Y            = GAME_HEIGHT / 2
 	INITIAL_SHIP_VX           = 0
 	INITIAL_SHIP_VY           = 0
 	INITIAL_DIRECTION_DEGREES = 0
-	ACCELERATION              = 0.05
-	MAX_SPEED                 = 5
+	MAX_SPEED                 = 1.8
+	ACCELERATION              = 0.1
 	TURN_RATE                 = 5 // in degrees
 )
 
@@ -34,16 +36,38 @@ func NewShip() (*Ship, error) {
 	return ship, nil
 }
 
-func (ship *Ship) Accelerate() {
-	if ship.Velocity.Y < MAX_SPEED {
-		ship.Velocity.Y += ACCELERATION
+func (ship *Ship) Accelerate(opposite bool) {
+	// calculate velocity vector based on direction
+	sign := 1.
+	if opposite {
+		sign *= -1
 	}
-}
 
-func (ship *Ship) Decelerate() {
-	if ship.Velocity.Y > 0 {
-		ship.Velocity.Y -= ACCELERATION
+	v1 := math.Sqrt(math.Pow(ship.Velocity.X, 2) + math.Pow(ship.Velocity.Y, 2))
+	v2 := v1 + sign*ACCELERATION
+
+	dirRad := degreeToRad(ship.Direction - 90) // assuming direction 0 deg is UP, need to rotate -ve
+	vx := v2 * math.Cos(dirRad)
+	vy := v2 * math.Sin(dirRad)
+
+	if vx > MAX_SPEED {
+		vx = MAX_SPEED
 	}
+
+	if vx < -MAX_SPEED {
+		vx = -MAX_SPEED
+	}
+
+	if vy > MAX_SPEED {
+		vy = MAX_SPEED
+	}
+
+	if vy < -MAX_SPEED {
+		vy = -MAX_SPEED
+	}
+
+	ship.Velocity.X = vx
+	ship.Velocity.Y = vy
 }
 
 func (ship *Ship) Rotate(clockwise bool) {
@@ -63,11 +87,6 @@ func (ship *Ship) Initialize() {
 }
 
 func (ship *Ship) Update() {
-	if ship.Position.X > 0 && ship.Position.X < GAME_WIDTH {
-		ship.Position.X += ship.Velocity.X
-	}
-
-	if ship.Position.Y > 0 && ship.Position.Y < GAME_HEIGHT {
-		ship.Position.Y -= ship.Velocity.Y // in ebiten, +ve Y is down
-	}
+	ship.Position.X += ship.Velocity.X
+	ship.Position.Y += ship.Velocity.Y
 }
