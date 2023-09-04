@@ -14,7 +14,28 @@ import (
 	"golang.org/x/image/font/opentype"
 )
 
-// SETTINGS =======================================================================================
+///////////////////////////////////////////////////////////////////////////////////////////////////
+//
+//    _____    _________________________________________ ________  .___________    _________
+//  /  _  \  /   _____/\__    ___/\_   _____/\______   \\_____  \ |   \______ \  /   _____/
+// /  /_\  \ \_____  \   |    |    |    __)_  |       _/ /   |   \|   ||    |  \ \_____  \
+///    |    \/        \  |    |    |        \ |    |   \/    |    \   ||    `   \/        \
+//\____|__  /_______  /  |____|   /_______  / |____|_  /\_______  /___/_______  /_______  /
+//        \/        \/                    \/         \/         \/            \/        \/
+//
+// By Nicholas Chumney (go clone of the classic game Asteroids)
+//
+///////////////////////////////////////////////////////////////////////////////////////////////////
+
+// This file conatins 6 sections:
+//   1) SETTINGS - constants and structs used in the game
+//   2) MAIN - the main ebiten game struct
+//   3) INITIALIZE - for game parameters at the start
+//   4) INPUT - for reading and handling keyboard inputs
+//   5) PROCESSING - for updating game state
+//   6) PAINT - for drawing to the screen
+
+// 1) SETTINGS =======================================================================================
 
 const (
 	GAME_WIDTH    = 300 // internal game width
@@ -74,7 +95,7 @@ var wonTexts = []textItem{
 	{"Press Space to replay", GAME_HEIGHT/2 + FONT_SIZE*2, TEXT_COLOR},
 }
 
-// MAIN ===========================================================================================
+// 2) MAIN ===========================================================================================
 
 // Game implements the ebiten.Game interface
 type Game struct {
@@ -148,7 +169,7 @@ func (game *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return GAME_WIDTH, GAME_HEIGHT
 }
 
-// LOADING ========================================================================================
+// 3) INITIALIZE ========================================================================================
 
 // loadObjects loads all required assets for the game
 func (game *Game) loadObjects() error {
@@ -194,9 +215,15 @@ func (game *Game) loadMenuResources() error {
 	return nil
 }
 
-// HANDLE INPUT ===================================================================================
+// 4) INPUT ===================================================================================
 
 // handleInput reads key inputs and performs actions
+// WS - to speed up/down
+// AD - to rotate left/right
+// SPACE - to starts game
+// P - to pause
+// 0 - show debug info
+// ESC - quit
 func (game *Game) handleInput() error {
 	// get pressed keys
 	game.pressedKeys = inpututil.AppendPressedKeys(game.pressedKeys[:0])
@@ -280,7 +307,7 @@ func (game *Game) gameOver() {
 	game.menuState = MenuStateGameOver
 }
 
-// PROCESS GAME LOGIC =============================================================================
+// 5) PROCESS =============================================================================
 
 // checkCollisions checks for any objects that are colliding
 func (game *Game) checkCollisions() {
@@ -302,7 +329,7 @@ func (game *Game) processLogic() error {
 	return nil
 }
 
-// PAINT SCREEN ===================================================================================
+// 6) PAINT  ===================================================================================
 
 func (g *Game) drawMenuScreen(screen *ebiten.Image) {
 	ebitenutil.DrawRect(screen, 0, 0, GAME_WIDTH, GAME_HEIGHT, MENU_BG_COLOR)
