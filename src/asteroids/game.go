@@ -262,8 +262,12 @@ func (game *Game) handleInput() error {
 			if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
 				game.restartGame()
 			}
+		case MenuStateWin:
+			if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
+				game.restartGame()
+			}
 		default:
-			return errors.New("unexpected menu state")
+			return errors.New(fmt.Sprintf("no input for menu %v was found", game.menuState))
 		}
 	case GameStatePlaying:
 		if inpututil.IsKeyJustPressed(ebiten.KeyP) {
@@ -287,7 +291,7 @@ func (game *Game) handleInput() error {
 			}
 		}
 	default:
-		return errors.New("unexpected game state")
+		return errors.New(fmt.Sprintf("no input for %v was found", game.gameState))
 	}
 
 	return nil
@@ -315,7 +319,12 @@ func (game *Game) restartGame() {
 	game.menuState = MenuStateMain
 }
 
-func (game *Game) gameOver() {
+func (game *Game) winGame() {
+	game.gameState = GameStateMenu
+	game.menuState = MenuStateWin
+}
+
+func (game *Game) loseGame() {
 	game.gameState = GameStateMenu
 	game.menuState = MenuStateGameOver
 }
@@ -324,9 +333,14 @@ func (game *Game) gameOver() {
 
 // checkCollisions checks for any objects that are colliding
 func (game *Game) checkCollisions() {
-	// on ship collision with any asteroids, end the game
+	// if bullet collides with asteroids, end the game, show WIN screen.
+	if game.asteroid.CollidesWith(&game.bullet.Entity) {
+		game.winGame()
+	}
+
+	// on ship collision with any asteroids, end the game, show LOSE screen
 	if game.ship.CollidesWith(&game.asteroid.Entity) {
-		game.gameOver()
+		game.loseGame()
 	}
 
 }
