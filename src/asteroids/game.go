@@ -32,7 +32,7 @@ import (
 //   2) MAIN - the main ebiten game struct
 //   3) INITIALIZE - for game parameters at the start
 //   4) INPUT - for reading and handling keyboard inputs
-//   5) PROCESSING - for updating game state
+//   5) PROCESS - for updating game state
 //   6) PAINT - for drawing to the screen
 
 // 1) SETTINGS =======================================================================================
@@ -104,6 +104,7 @@ type Game struct {
 	pressedKeys []ebiten.Key
 	ship        *Ship
 	asteroid    *Asteroid
+	bullet      *Bullet
 	font        font.Face
 	showDebug   bool
 }
@@ -185,11 +186,18 @@ func (game *Game) loadObjects() error {
 	if err != nil {
 		return err
 	}
-	// make sure asteroid does not spawn on ship initially
+	//// make sure asteroid does not spawn on ship initially
 	for asteroid.CollidesWith(&ship.Entity) {
 		asteroid.GetRandomPosition()
 	}
 	game.asteroid = asteroid
+
+	// load bullet
+	bullet, err := NewBullet()
+	if err != nil {
+		return err
+	}
+	game.bullet = bullet
 
 	return nil
 }
@@ -220,7 +228,8 @@ func (game *Game) loadMenuResources() error {
 // handleInput reads key inputs and performs actions
 // WS - to speed up/down
 // AD - to rotate left/right
-// SPACE - to starts game
+// SPACE (in game) - to shoot
+// SPACE (in menus) - to starts game
 // P - to pause
 // 0 - show debug info
 // ESC - quit
@@ -259,6 +268,10 @@ func (game *Game) handleInput() error {
 	case GameStatePlaying:
 		if inpututil.IsKeyJustPressed(ebiten.KeyP) {
 			game.pauseGame()
+		}
+
+		if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
+			game.bullet.Fire(game.ship.Position.X, game.ship.Position.Y, game.ship.Direction)
 		}
 
 		for _, key := range game.pressedKeys {
@@ -323,6 +336,7 @@ func (game *Game) processLogic() error {
 	if game.gameState == GameStatePlaying {
 		game.ship.Update()
 		game.asteroid.Update()
+		game.bullet.Update()
 		game.checkCollisions()
 	}
 
@@ -358,6 +372,7 @@ func (g *Game) drawMenuScreen(screen *ebiten.Image) {
 func (game *Game) drawObjects(screen *ebiten.Image) {
 	game.ship.Draw(screen)
 	game.asteroid.Draw(screen)
+	game.bullet.Draw(screen)
 }
 
 func (game *Game) printDebugInfo(screen *ebiten.Image) {

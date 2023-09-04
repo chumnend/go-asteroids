@@ -12,7 +12,14 @@ type Entity struct {
 }
 
 func NewEntity() Entity {
-	return Entity{}
+	return Entity{
+		Position:    Vector2{X: 0, Y: 0},
+		Velocity:    Vector2{X: 0, Y: 0},
+		Direction:   0,
+		Sprite:      nil,
+		IsHidden:    false,
+		IsRotatable: false,
+	}
 }
 
 func (e *Entity) GetBoundingRect() Rectangle {
