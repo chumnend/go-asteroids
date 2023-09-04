@@ -81,16 +81,23 @@ type Game struct {
 	gameState   GameState
 	menuState   MenuState
 	pressedKeys []ebiten.Key
-
-	font font.Face
-
-	ship     *Ship
-	asteroid *Asteroid
+	ship        *Ship
+	asteroid    *Asteroid
+	font        font.Face
+	showDebug   bool
 }
 
 // NewGame returns a Game struct, the width of the window and the height of the window
 func NewGame() (*Game, int, int) {
-	return &Game{}, WINDOW_WIDTH, WINDOW_HEIGHT
+	return &Game{
+		gameState:   GameStateMenu,
+		menuState:   MenuStateMain,
+		pressedKeys: nil,
+		ship:        nil,
+		asteroid:    nil,
+		font:        nil,
+		showDebug:   false,
+	}, WINDOW_WIDTH, WINDOW_HEIGHT
 }
 
 // Init loads all resources for the game
@@ -131,7 +138,9 @@ func (game *Game) Draw(screen *ebiten.Image) {
 	}
 
 	// debug info
-	game.printDebugInfo(screen)
+	if game.showDebug {
+		game.printDebugInfo(screen)
+	}
 }
 
 // Layout takes the outside size (e.g., the window size) and returns the (logical) screen size.
@@ -195,6 +204,11 @@ func (game *Game) handleInput() error {
 	// force game end
 	if inpututil.IsKeyJustPressed(ebiten.KeyEscape) {
 		return ebiten.Termination
+	}
+
+	// show debug info
+	if inpututil.IsKeyJustPressed(ebiten.Key0) {
+		game.showDebug = !game.showDebug
 	}
 
 	switch game.gameState {
@@ -340,5 +354,5 @@ func (game *Game) printDebugInfo(screen *ebiten.Image) {
 		currentMenuState = "Win"
 	}
 
-	ebitenutil.DebugPrint(screen, fmt.Sprintf("State: %v   Menu: %v\nKeys: %v\nShip X:%.0f Y:%.0f Vx: %.1f Vy: %.1f Dir: %.1f", currentGameState, currentMenuState, game.pressedKeys, game.ship.Position.X, game.ship.Position.Y, game.ship.Velocity.X, game.ship.Velocity.Y, game.ship.Direction))
+	ebitenutil.DebugPrint(screen, fmt.Sprintf("State: %v   Menu: %v\nKeys: %v\nShip Pos X:%.0f Y:%.0f Dir: %.1f\nShip Spd Vx: %.1f Vy: %.1f ", currentGameState, currentMenuState, game.pressedKeys, game.ship.Position.X, game.ship.Position.Y, game.ship.Velocity.X, game.ship.Velocity.Y, game.ship.Direction))
 }
