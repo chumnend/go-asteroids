@@ -5,9 +5,9 @@ import (
 )
 
 const (
-	INITIAL_NUMBER_OF_ASTEROIDS = 3
-	INITIAL_ASTEROID_VX         = 1
-	INITIAL_ASTEROID_VY         = -1
+	NUMBER_OF_ASTEROIDS = 5
+	INITIAL_ASTEROID_VX = 1
+	INITIAL_ASTEROID_VY = -1
 )
 
 type Asteroid struct {
@@ -32,6 +32,19 @@ func NewAsteroid() (*Asteroid, error) {
 	return asteroid, nil
 }
 
+func NewAsteroids() ([]*Asteroid, error) {
+	asteroids := make([]*Asteroid, 0)
+	for i := 0; i < NUMBER_OF_ASTEROIDS; i++ {
+		asteroid, err := NewAsteroid()
+		if err != nil {
+			return nil, err
+		}
+		asteroids = append(asteroids, asteroid)
+	}
+
+	return asteroids, nil
+}
+
 func (asteroid *Asteroid) GetRandomPosition() {
 	randX := rand.Intn(GAME_WIDTH - int(asteroid.Sprite.GetSize().X))
 	randY := rand.Intn(GAME_HEIGHT - int(asteroid.Sprite.GetSize().Y))
@@ -39,11 +52,19 @@ func (asteroid *Asteroid) GetRandomPosition() {
 	asteroid.Position.Y = float64(randY)
 }
 
+func (asteroid *Asteroid) Destroy() {
+	asteroid.IsHidden = true
+	asteroid.Position.X = GAME_HEIGHT * 2
+	asteroid.Position.Y = GAME_WIDTH * 2
+	asteroid.Velocity.X = 0
+	asteroid.Velocity.Y = 0
+}
+
 func (asteroid *Asteroid) Initialize() {
+	asteroid.IsHidden = false
 	asteroid.GetRandomPosition()
 	asteroid.Velocity.X = INITIAL_ASTEROID_VX
 	asteroid.Velocity.Y = INITIAL_ASTEROID_VY
-
 }
 
 func (asteroid *Asteroid) Update() {

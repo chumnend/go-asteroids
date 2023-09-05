@@ -103,7 +103,7 @@ type Game struct {
 	menuState   MenuState
 	pressedKeys []ebiten.Key
 	ship        *Ship
-	asteroid    *Asteroid
+	asteroids   []*Asteroid
 	bullet      *Bullet
 	font        font.Face
 	showDebug   bool
@@ -116,7 +116,7 @@ func NewGame() (*Game, int, int) {
 		menuState:   MenuStateMain,
 		pressedKeys: nil,
 		ship:        nil,
-		asteroid:    nil,
+		asteroids:   nil,
 		font:        nil,
 		showDebug:   false,
 	}, WINDOW_WIDTH, WINDOW_HEIGHT
@@ -181,16 +181,20 @@ func (game *Game) loadObjects() error {
 	}
 	game.ship = ship
 
-	// load asteroid
-	asteroid, err := NewAsteroid()
+	// load asteroids
+	asteroids, err := NewAsteroids()
 	if err != nil {
 		return err
 	}
-	//// make sure asteroid does not spawn on ship initially
-	for asteroid.CollidesWith(&ship.Entity) {
-		asteroid.GetRandomPosition()
+
+	// check to make sure asteroids do not spawn on ship
+	for _, asteroid := range asteroids {
+		for asteroid.CollidesWith(&ship.Entity) {
+			asteroid.GetRandomPosition()
+		}
 	}
-	game.asteroid = asteroid
+
+	game.asteroids = asteroids
 
 	// load bullet
 	bullet, err := NewBullet()
@@ -313,7 +317,9 @@ func (game *Game) resumeGame() {
 func (game *Game) restartGame() {
 	// reset game object parameters
 	game.ship.Initialize()
-	game.asteroid.Initialize()
+	for _, asteroid := range game.asteroids {
+		asteroid.Initialize()
+	}
 
 	game.gameState = GameStateMenu
 	game.menuState = MenuStateMain
@@ -333,25 +339,44 @@ func (game *Game) loseGame() {
 
 // checkCollisions checks for any objects that are colliding
 func (game *Game) checkCollisions() {
-	// if bullet collides with asteroids, end the game, show WIN screen.
-	if game.asteroid.CollidesWith(&game.bullet.Entity) {
-		game.winGame()
+	// if bullet collides with asteroids, destory the asteroid
+	for _, asteroid := range game.asteroids {
+		if asteroid.CollidesWith(&game.bullet.Entity) {
+			asteroid.Destroy()
+		}
 	}
 
 	// on ship collision with any asteroids, end the game, show LOSE screen
-	if game.ship.CollidesWith(&game.asteroid.Entity) {
-		game.loseGame()
+	for _, asteroid := range game.asteroids {
+		if game.ship.CollidesWith(&asteroid.Entity) {
+			game.loseGame()
+		}
 	}
+}
 
+// checkWin checks if player has won the game (all asteroids destroyed)
+func (game *Game) checkWin() bool {
+	didWin := true
+	for _, asteroid := range game.asteroids {
+		if asteroid.IsHidden == false {
+			didWin = false
+		}
+	}
+	return didWin
 }
 
 // processLogic updates all game objects each frame
 func (game *Game) processLogic() error {
 	if game.gameState == GameStatePlaying {
 		game.ship.Update()
-		game.asteroid.Update()
+		for _, asteroid := range game.asteroids {
+			asteroid.Update()
+		}
 		game.bullet.Update()
 		game.checkCollisions()
+		if game.checkWin() == true {
+			game.winGame()
+		}
 	}
 
 	return nil
@@ -385,7 +410,9 @@ func (g *Game) drawMenuScreen(screen *ebiten.Image) {
 
 func (game *Game) drawObjects(screen *ebiten.Image) {
 	game.ship.Draw(screen)
-	game.asteroid.Draw(screen)
+	for _, asteroid := range game.asteroids {
+		asteroid.Draw(screen)
+	}
 	game.bullet.Draw(screen)
 }
 
