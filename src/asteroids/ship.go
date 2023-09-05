@@ -95,5 +95,18 @@ func (ship *Ship) Initialize() {
 
 func (ship *Ship) Update() {
 	ship.Position.X += ship.Velocity.X
+	if ship.Position.X < 0 {
+		ship.Position.X = 0
+	}
+	if ship.Position.X > GAME_WIDTH {
+		ship.Position.X = GAME_WIDTH
+	}
+
 	ship.Position.Y += ship.Velocity.Y
+	if ship.Position.Y < 0 {
+		ship.Position.Y = 0
+	}
+	if ship.Position.Y > GAME_HEIGHT {
+		ship.Position.Y = GAME_HEIGHT
+	}
 }
