@@ -52,6 +52,11 @@ func (asteroid *Asteroid) GetRandomPosition() {
 	asteroid.Position.Y = float64(randY)
 }
 
+func (asteroid *Asteroid) Bounce() {
+	asteroid.Velocity.X *= -1
+	asteroid.Velocity.Y *= -1
+}
+
 func (asteroid *Asteroid) Destroy() {
 	asteroid.IsHidden = true
 	asteroid.Position.X = GAME_HEIGHT * 2

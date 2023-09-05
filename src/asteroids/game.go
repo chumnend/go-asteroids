@@ -187,10 +187,20 @@ func (game *Game) loadObjects() error {
 		return err
 	}
 
-	// check to make sure asteroids do not spawn on ship
-	for _, asteroid := range asteroids {
+	// check to make sure asteroids do not spawn on ship, other asteroids
+	// TODO: this logic will not have an effect when restarting game, need to move this elsewhere
+	for idx, asteroid := range asteroids {
 		for asteroid.CollidesWith(&ship.Entity) {
 			asteroid.GetRandomPosition()
+		}
+
+		otherAsteroids := make([]*Asteroid, len(asteroids))
+		copy(otherAsteroids, asteroids)
+		otherAsteroids = append(otherAsteroids[:idx], otherAsteroids[idx+1:]...)
+		for _, oA := range otherAsteroids {
+			for asteroid.CollidesWith(&oA.Entity) {
+				asteroid.GetRandomPosition()
+			}
 		}
 	}
 
@@ -339,7 +349,7 @@ func (game *Game) loseGame() {
 
 // checkCollisions checks for any objects that are colliding
 func (game *Game) checkCollisions() {
-	// if bullet collides with asteroids, destory the asteroid
+	// if bullet collides with asteroids, destroy the asteroid
 	for _, asteroid := range game.asteroids {
 		if asteroid.CollidesWith(&game.bullet.Entity) {
 			asteroid.Destroy()
@@ -347,10 +357,22 @@ func (game *Game) checkCollisions() {
 	}
 
 	// on ship collision with any asteroids, end the game, show LOSE screen
-	for _, asteroid := range game.asteroids {
+	for idx, asteroid := range game.asteroids {
 		if game.ship.CollidesWith(&asteroid.Entity) {
 			game.loseGame()
 		}
+
+		// check if asteroid collided with other asteroids
+		otherAsteroids := make([]*Asteroid, len(game.asteroids))
+		copy(otherAsteroids, game.asteroids)
+		otherAsteroids = append(otherAsteroids[:idx], otherAsteroids[idx+1:]...)
+		for _, oA := range otherAsteroids {
+			didBounce := asteroid.CollidesWith(&oA.Entity)
+			if didBounce {
+				asteroid.Bounce()
+			}
+		}
+
 	}
 }
 
