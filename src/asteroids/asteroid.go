@@ -2,6 +2,8 @@ package asteroids
 
 import (
 	"math/rand"
+
+	"github.com/hajimehoshi/ebiten/v2"
 )
 
 const (
@@ -30,19 +32,6 @@ func NewAsteroid() (*Asteroid, error) {
 	asteroid.Initialize()
 
 	return asteroid, nil
-}
-
-func NewAsteroids() ([]*Asteroid, error) {
-	asteroids := make([]*Asteroid, 0)
-	for i := 0; i < NUMBER_OF_ASTEROIDS; i++ {
-		asteroid, err := NewAsteroid()
-		if err != nil {
-			return nil, err
-		}
-		asteroids = append(asteroids, asteroid)
-	}
-
-	return asteroids, nil
 }
 
 func (asteroid *Asteroid) GetRandomPosition() {
@@ -83,5 +72,57 @@ func (asteroid *Asteroid) Update() {
 	asteroid.Position.Y += asteroid.Velocity.Y
 	if asteroid.Position.Y+rect.H >= GAME_HEIGHT || asteroid.Position.Y <= 0 {
 		asteroid.Velocity.Y *= -1
+	}
+}
+
+type Asteroids []*Asteroid
+
+func NewAsteroids(ship *Ship) (Asteroids, error) {
+	asteroids := make(Asteroids, 0)
+	for i := 0; i < NUMBER_OF_ASTEROIDS; i++ {
+		asteroid, err := NewAsteroid()
+		if err != nil {
+			return nil, err
+		}
+		asteroids = append(asteroids, asteroid)
+	}
+
+	// set initial parameters
+	asteroids.Initialize(ship)
+
+	return asteroids, nil
+}
+
+func (asteroids Asteroids) Initialize(ship *Ship) {
+	// check to make sure asteroids do not spawn on ship, other asteroids
+	for idx, asteroid := range asteroids {
+		for asteroid.CollidesWith(&ship.Entity) {
+			asteroid.GetRandomPosition()
+		}
+
+		otherAsteroids := make([]*Asteroid, len(asteroids))
+		copy(otherAsteroids, asteroids)
+		otherAsteroids = append(otherAsteroids[:idx], otherAsteroids[idx+1:]...)
+		for _, oA := range otherAsteroids {
+			for asteroid.CollidesWith(&oA.Entity) {
+				asteroid.GetRandomPosition()
+			}
+		}
+	}
+
+	for _, asteroid := range asteroids {
+		asteroid.Initialize()
+	}
+}
+
+func (asteroids Asteroids) Update() {
+	for _, asteroid := range asteroids {
+		asteroid.Update()
+	}
+}
+
+func (asteroids Asteroids) Draw(screen *ebiten.Image) {
+	for _, asteroid := range asteroids {
+		asteroid.Draw(screen)
 	}
 }

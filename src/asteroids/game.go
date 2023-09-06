@@ -103,7 +103,7 @@ type Game struct {
 	menuState   MenuState
 	pressedKeys []ebiten.Key
 	ship        *Ship
-	asteroids   []*Asteroid
+	asteroids   Asteroids
 	bullet      *Bullet
 	font        font.Face
 	showDebug   bool
@@ -182,28 +182,10 @@ func (game *Game) loadObjects() error {
 	game.ship = ship
 
 	// load asteroids
-	asteroids, err := NewAsteroids()
+	asteroids, err := NewAsteroids(ship)
 	if err != nil {
 		return err
 	}
-
-	// check to make sure asteroids do not spawn on ship, other asteroids
-	// TODO: this logic will not have an effect when restarting game, need to move this elsewhere
-	for idx, asteroid := range asteroids {
-		for asteroid.CollidesWith(&ship.Entity) {
-			asteroid.GetRandomPosition()
-		}
-
-		otherAsteroids := make([]*Asteroid, len(asteroids))
-		copy(otherAsteroids, asteroids)
-		otherAsteroids = append(otherAsteroids[:idx], otherAsteroids[idx+1:]...)
-		for _, oA := range otherAsteroids {
-			for asteroid.CollidesWith(&oA.Entity) {
-				asteroid.GetRandomPosition()
-			}
-		}
-	}
-
 	game.asteroids = asteroids
 
 	// load bullet
@@ -327,10 +309,7 @@ func (game *Game) resumeGame() {
 func (game *Game) restartGame() {
 	// reset game object parameters
 	game.ship.Initialize()
-	for _, asteroid := range game.asteroids {
-		asteroid.Initialize()
-	}
-
+	game.asteroids.Initialize(game.ship)
 	game.gameState = GameStateMenu
 	game.menuState = MenuStateMain
 }
@@ -363,7 +342,7 @@ func (game *Game) checkCollisions() {
 		}
 
 		// check if asteroid collided with other asteroids
-		otherAsteroids := make([]*Asteroid, len(game.asteroids))
+		otherAsteroids := make(Asteroids, len(game.asteroids))
 		copy(otherAsteroids, game.asteroids)
 		otherAsteroids = append(otherAsteroids[:idx], otherAsteroids[idx+1:]...)
 		for _, oA := range otherAsteroids {
@@ -390,11 +369,12 @@ func (game *Game) checkWin() bool {
 // processLogic updates all game objects each frame
 func (game *Game) processLogic() error {
 	if game.gameState == GameStatePlaying {
+		// update game objects
 		game.ship.Update()
-		for _, asteroid := range game.asteroids {
-			asteroid.Update()
-		}
+		game.asteroids.Update()
 		game.bullet.Update()
+
+		// evaluate state of the game
 		game.checkCollisions()
 		if game.checkWin() == true {
 			game.winGame()
@@ -432,9 +412,7 @@ func (g *Game) drawMenuScreen(screen *ebiten.Image) {
 
 func (game *Game) drawObjects(screen *ebiten.Image) {
 	game.ship.Draw(screen)
-	for _, asteroid := range game.asteroids {
-		asteroid.Draw(screen)
-	}
+	game.asteroids.Draw(screen)
 	game.bullet.Draw(screen)
 }
 
