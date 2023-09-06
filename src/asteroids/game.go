@@ -30,10 +30,9 @@ import (
 // This file conatins 6 sections:
 //   1) SETTINGS - constants and structs used in the game
 //   2) MAIN - the main ebiten game struct
-//   3) INITIALIZE - for game parameters at the start
-//   4) INPUT - for reading and handling keyboard inputs
-//   5) PROCESS - for updating game state
-//   6) PAINT - for drawing to the screen
+//   3) INPUT - for reading and handling keyboard inputs
+//   4) PROCESS - for updating game state
+//   5) PAINT - for drawing to the screen
 
 // 1) SETTINGS =======================================================================================
 
@@ -124,13 +123,41 @@ func NewGame() (*Game, int, int) {
 
 // Init loads all resources for the game
 func (game *Game) Init() error {
-	if err := game.loadMenuResources(); err != nil {
+	// load the font type
+	tt, err := opentype.Parse(fonts.PressStart2P_ttf)
+	if err != nil {
 		return err
 	}
+	tf, err := opentype.NewFace(tt, &opentype.FaceOptions{
+		Size:    float64(FONT_SIZE),
+		DPI:     float64(DPI),
+		Hinting: font.HintingFull,
+	})
+	if err != nil {
+		return err
+	}
+	game.font = tf
 
-	if err := game.loadObjects(); err != nil {
+	// load ship
+	ship, err := NewShip()
+	if err != nil {
 		return err
 	}
+	game.ship = ship
+
+	// load asteroids
+	asteroids, err := NewAsteroids(ship)
+	if err != nil {
+		return err
+	}
+	game.asteroids = asteroids
+
+	// load bullet
+	bullet, err := NewBullet()
+	if err != nil {
+		return err
+	}
+	game.bullet = bullet
 
 	return nil
 }
@@ -170,56 +197,7 @@ func (game *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return GAME_WIDTH, GAME_HEIGHT
 }
 
-// 3) INITIALIZE ========================================================================================
-
-// loadObjects loads all required assets for the game
-func (game *Game) loadObjects() error {
-	// load ship
-	ship, err := NewShip()
-	if err != nil {
-		return err
-	}
-	game.ship = ship
-
-	// load asteroids
-	asteroids, err := NewAsteroids(ship)
-	if err != nil {
-		return err
-	}
-	game.asteroids = asteroids
-
-	// load bullet
-	bullet, err := NewBullet()
-	if err != nil {
-		return err
-	}
-	game.bullet = bullet
-
-	return nil
-}
-
-func (game *Game) loadMenuResources() error {
-	// load the font type
-	tt, err := opentype.Parse(fonts.PressStart2P_ttf)
-	if err != nil {
-		return err
-	}
-
-	tf, err := opentype.NewFace(tt, &opentype.FaceOptions{
-		Size:    float64(FONT_SIZE),
-		DPI:     float64(DPI),
-		Hinting: font.HintingFull,
-	})
-	if err != nil {
-		return err
-	}
-
-	game.font = tf
-
-	return nil
-}
-
-// 4) INPUT ===================================================================================
+// 3) INPUT ===================================================================================
 
 // handleInput reads key inputs and performs actions
 // WS - to speed up/down
@@ -293,19 +271,23 @@ func (game *Game) handleInput() error {
 	return nil
 }
 
+// startGame sets the game state to "playing"
 func (game *Game) startGame() {
 	game.gameState = GameStatePlaying
 }
 
+// pauseGame sets the game state to "menu" and show the "pause" menu
 func (game *Game) pauseGame() {
 	game.gameState = GameStateMenu
 	game.menuState = MenuStatePause
 }
 
+// resumeGame sets the game state to "playing" and hides the "pause" menu
 func (game *Game) resumeGame() {
 	game.gameState = GameStatePlaying
 }
 
+// restartGame sets the game state to "menu" and show the "main" menu
 func (game *Game) restartGame() {
 	// reset game object parameters
 	game.ship.Initialize()
@@ -314,17 +296,19 @@ func (game *Game) restartGame() {
 	game.menuState = MenuStateMain
 }
 
+// winGame sets the game state to "menu" and show the "win" menu
 func (game *Game) winGame() {
 	game.gameState = GameStateMenu
 	game.menuState = MenuStateWin
 }
 
+// loseGame sets the game state to "menu" and shows the "game over" menu
 func (game *Game) loseGame() {
 	game.gameState = GameStateMenu
 	game.menuState = MenuStateGameOver
 }
 
-// 5) PROCESS =============================================================================
+// 4) PROCESS =============================================================================
 
 // checkCollisions checks for any objects that are colliding
 func (game *Game) checkCollisions() {
@@ -384,8 +368,9 @@ func (game *Game) processLogic() error {
 	return nil
 }
 
-// 6) PAINT  ===================================================================================
+// 5) PAINT  ===================================================================================
 
+// drawMenuScreen draws the text to be shown on menu based on current menu state
 func (g *Game) drawMenuScreen(screen *ebiten.Image) {
 	ebitenutil.DrawRect(screen, 0, 0, GAME_WIDTH, GAME_HEIGHT, MENU_BG_COLOR)
 
@@ -410,12 +395,14 @@ func (g *Game) drawMenuScreen(screen *ebiten.Image) {
 	}
 }
 
+// drawObjects paints the screen with game objects
 func (game *Game) drawObjects(screen *ebiten.Image) {
 	game.ship.Draw(screen)
 	game.asteroids.Draw(screen)
 	game.bullet.Draw(screen)
 }
 
+// printDebugInfo shows game information if debug mode is on
 func (game *Game) printDebugInfo(screen *ebiten.Image) {
 	var currentGameState string
 	switch game.gameState {
