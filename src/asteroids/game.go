@@ -318,7 +318,8 @@ func (game *Game) checkCollisions() {
 	for _, bullet := range game.bullets {
 		for _, asteroid := range game.asteroids {
 			if asteroid.CollidesWith(&bullet.Entity) {
-				asteroid.Destroy()
+				bullet.Initialize() // reset the bullet
+				asteroid.Destroy()  // remove the asteroid
 			}
 		}
 	}
