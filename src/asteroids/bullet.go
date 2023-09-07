@@ -7,12 +7,13 @@ import (
 )
 
 const (
-	NUMBER_OF_BULLETS = 5
+	NUMBER_OF_BULLETS = 3
 	BULLET_SPEED      = 4
 )
 
 type Bullet struct {
 	Entity
+	IsFree bool
 }
 
 func NewBullet() (*Bullet, error) {
@@ -33,19 +34,21 @@ func NewBullet() (*Bullet, error) {
 	return bullet, nil
 }
 
-func (bullet *Bullet) Shoot(shipX, shipY, shipDir float64) {
-	bullet.Position.X = shipX
-	bullet.Position.Y = shipY
-	bullet.Direction = shipDir
+func (bullet *Bullet) Shoot(ship *Ship) {
 	bullet.IsHidden = false
+	bullet.IsFree = false
+	bullet.Position.X = ship.Position.X
+	bullet.Position.Y = ship.Position.Y
+	bullet.Direction = ship.Direction
 
-	dirRad := degreeToRad(shipDir - 90) // assuming direction 0 deg is UP, need to rotate -ve
+	dirRad := degreeToRad(ship.Direction - 90) // assuming direction 0 deg is UP, need to rotate -ve
 	bullet.Velocity.X = BULLET_SPEED * math.Cos(dirRad)
 	bullet.Velocity.Y = BULLET_SPEED * math.Sin(dirRad)
 }
 
 func (bullet *Bullet) Initialize() {
 	bullet.IsHidden = true
+	bullet.IsFree = true
 	bullet.Position.X = GAME_HEIGHT * 2
 	bullet.Position.Y = GAME_WIDTH * 2
 	bullet.Velocity.X = 0
@@ -55,11 +58,14 @@ func (bullet *Bullet) Initialize() {
 func (bullet *Bullet) Update() {
 	bullet.Position.X += bullet.Velocity.X
 	bullet.Position.Y += bullet.Velocity.Y
+
+	// if bullet off screen, reset the bullet
+	if bullet.Position.X < 0 || bullet.Position.X+bullet.Sprite.GetSize().X > GAME_WIDTH || bullet.Position.Y < 0 || bullet.Position.Y+bullet.Sprite.GetSize().Y > GAME_HEIGHT {
+		bullet.Initialize()
+	}
 }
 
 type Bullets []*Bullet
-
-var currentBulletIdx int
 
 func NewBullets() (Bullets, error) {
 	bullets := make(Bullets, 0)
@@ -75,16 +81,18 @@ func NewBullets() (Bullets, error) {
 }
 
 func (bullets Bullets) Shoot(ship *Ship) {
-	// if out of bullets, do not shoot
-	if currentBulletIdx >= NUMBER_OF_BULLETS {
-		return
+	// look for free bullet to fire
+	currentIdx := 0
+	for currentIdx < NUMBER_OF_BULLETS {
+		if bullets[currentIdx].IsFree {
+			bullets[currentIdx].Shoot(ship)
+			return
+		}
+		currentIdx++
 	}
-	bullets[currentBulletIdx].Shoot(ship.Position.X, ship.Position.Y, ship.Direction)
-	currentBulletIdx += 1
 }
 
 func (bullets Bullets) Initialize() {
-	currentBulletIdx = 0
 	for _, bullet := range bullets {
 		bullet.Initialize()
 	}
