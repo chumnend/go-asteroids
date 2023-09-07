@@ -3,14 +3,14 @@ package asteroids
 import "math"
 
 const (
-	INITIAL_SHIP_X            = GAME_WIDTH / 2
-	INITIAL_SHIP_Y            = GAME_HEIGHT / 2
-	INITIAL_SHIP_VX           = 0
-	INITIAL_SHIP_VY           = 0
-	INITIAL_DIRECTION_DEGREES = 0
-	MAX_SPEED                 = 1.8
-	ACCELERATION              = 0.1
-	TURN_RATE                 = 5 // in degrees
+	SHIP_INITIAL_X                 = GAME_WIDTH / 2
+	SHIP_INITIAL_Y                 = GAME_HEIGHT / 2
+	SHIP_INITIAL_VX                = 0
+	SHIP_INITIAL_VY                = 0
+	SHIP_INITIAL_DIRECTION_DEGREES = 0
+	SHIP_MAX_SPEED                 = 1.8
+	SHIP_ACCELERATION              = 0.1
+	SHIP_TURN_RATE                 = 5 // in degrees
 )
 
 type Ship struct {
@@ -44,26 +44,26 @@ func (ship *Ship) Accelerate(opposite bool) {
 	}
 
 	v1 := math.Sqrt(math.Pow(ship.Velocity.X, 2) + math.Pow(ship.Velocity.Y, 2))
-	v2 := v1 + sign*ACCELERATION
+	v2 := v1 + sign*SHIP_ACCELERATION
 
 	dirRad := degreeToRad(ship.Direction - 90) // assuming direction 0 deg is UP, need to rotate -ve
 	vx := v2 * math.Cos(dirRad)
 	vy := v2 * math.Sin(dirRad)
 
-	if vx > MAX_SPEED {
-		vx = MAX_SPEED
+	if vx > SHIP_MAX_SPEED {
+		vx = SHIP_MAX_SPEED
 	}
 
-	if vx < -MAX_SPEED {
-		vx = -MAX_SPEED
+	if vx < -SHIP_MAX_SPEED {
+		vx = -SHIP_MAX_SPEED
 	}
 
-	if vy > MAX_SPEED {
-		vy = MAX_SPEED
+	if vy > SHIP_MAX_SPEED {
+		vy = SHIP_MAX_SPEED
 	}
 
-	if vy < -MAX_SPEED {
-		vy = -MAX_SPEED
+	if vy < -SHIP_MAX_SPEED {
+		vy = -SHIP_MAX_SPEED
 	}
 
 	ship.Velocity.X = vx
@@ -76,7 +76,7 @@ func (ship *Ship) Rotate(clockwise bool) {
 		sign *= -1
 	}
 
-	newDir := ship.Direction + sign*float64(TURN_RATE)
+	newDir := ship.Direction + sign*float64(SHIP_TURN_RATE)
 	newDir = math.Mod(newDir, 360)
 	if newDir < 0 {
 		newDir += 360
@@ -86,11 +86,11 @@ func (ship *Ship) Rotate(clockwise bool) {
 }
 
 func (ship *Ship) Initialize() {
-	ship.Position.X = INITIAL_SHIP_X
-	ship.Position.Y = INITIAL_SHIP_Y
-	ship.Velocity.X = INITIAL_SHIP_VX
-	ship.Velocity.Y = INITIAL_SHIP_VY
-	ship.Direction = INITIAL_DIRECTION_DEGREES
+	ship.Position.X = SHIP_INITIAL_X
+	ship.Position.Y = SHIP_INITIAL_Y
+	ship.Velocity.X = SHIP_INITIAL_VX
+	ship.Velocity.Y = SHIP_INITIAL_VY
+	ship.Direction = SHIP_INITIAL_DIRECTION_DEGREES
 }
 
 func (ship *Ship) Update() {
