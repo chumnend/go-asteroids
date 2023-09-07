@@ -103,7 +103,7 @@ type Game struct {
 	pressedKeys []ebiten.Key
 	ship        *Ship
 	asteroids   Asteroids
-	bullet      *Bullet
+	bullets     Bullets
 	font        font.Face
 	showDebug   bool
 }
@@ -116,6 +116,7 @@ func NewGame() (*Game, int, int) {
 		pressedKeys: nil,
 		ship:        nil,
 		asteroids:   nil,
+		bullets:     nil,
 		font:        nil,
 		showDebug:   false,
 	}, WINDOW_WIDTH, WINDOW_HEIGHT
@@ -153,11 +154,11 @@ func (game *Game) Init() error {
 	game.asteroids = asteroids
 
 	// load bullet
-	bullet, err := NewBullet()
+	bullets, err := NewBullets()
 	if err != nil {
 		return err
 	}
-	game.bullet = bullet
+	game.bullets = bullets
 
 	return nil
 }
@@ -249,7 +250,7 @@ func (game *Game) handleInput() error {
 		}
 
 		if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
-			game.bullet.Fire(game.ship.Position.X, game.ship.Position.Y, game.ship.Direction)
+			game.bullets.Shoot(game.ship)
 		}
 
 		for _, key := range game.pressedKeys {
@@ -292,6 +293,7 @@ func (game *Game) restartGame() {
 	// reset game object parameters
 	game.ship.Initialize()
 	game.asteroids.Initialize(game.ship)
+	game.bullets.Initialize()
 	game.gameState = GameStateMenu
 	game.menuState = MenuStateMain
 }
@@ -313,9 +315,11 @@ func (game *Game) loseGame() {
 // checkCollisions checks for any objects that are colliding
 func (game *Game) checkCollisions() {
 	// if bullet collides with asteroids, destroy the asteroid
-	for _, asteroid := range game.asteroids {
-		if asteroid.CollidesWith(&game.bullet.Entity) {
-			asteroid.Destroy()
+	for _, bullet := range game.bullets {
+		for _, asteroid := range game.asteroids {
+			if asteroid.CollidesWith(&bullet.Entity) {
+				asteroid.Destroy()
+			}
 		}
 	}
 
@@ -356,7 +360,7 @@ func (game *Game) processLogic() error {
 		// update game objects
 		game.ship.Update()
 		game.asteroids.Update()
-		game.bullet.Update()
+		game.bullets.Update()
 
 		// evaluate state of the game
 		game.checkCollisions()
@@ -399,7 +403,7 @@ func (g *Game) drawMenuScreen(screen *ebiten.Image) {
 func (game *Game) drawObjects(screen *ebiten.Image) {
 	game.ship.Draw(screen)
 	game.asteroids.Draw(screen)
-	game.bullet.Draw(screen)
+	game.bullets.Draw(screen)
 }
 
 // printDebugInfo shows game information if debug mode is on
