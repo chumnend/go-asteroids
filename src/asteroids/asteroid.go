@@ -94,7 +94,7 @@ func NewAsteroids(ship *Ship) (Asteroids, error) {
 }
 
 func (asteroids Asteroids) Initialize(ship *Ship) {
-	// check to make sure asteroids do not spawn on ship, other asteroids
+	// check to make sure asteroids do not spawn on ship or other asteroids
 	for idx, asteroid := range asteroids {
 		for asteroid.CollidesWith(&ship.Entity) {
 			asteroid.GetRandomPosition()
@@ -104,7 +104,7 @@ func (asteroids Asteroids) Initialize(ship *Ship) {
 		copy(otherAsteroids, asteroids)
 		otherAsteroids = append(otherAsteroids[:idx], otherAsteroids[idx+1:]...)
 		for _, oA := range otherAsteroids {
-			for asteroid.CollidesWith(&oA.Entity) {
+			for asteroid.CollidesWithOffset(&oA.Entity, 20) {
 				asteroid.GetRandomPosition()
 			}
 		}

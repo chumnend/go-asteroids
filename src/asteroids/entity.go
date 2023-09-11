@@ -34,6 +34,14 @@ func (e *Entity) CollidesWith(obj *Entity) bool {
 	return rect1.Overlaps(rect2)
 }
 
+func (e *Entity) CollidesWithOffset(obj *Entity, offset float64) bool {
+	w := e.Sprite.GetSize().X
+	h := e.Sprite.GetSize().Y
+	rect1 := Rectangle{float64(e.Position.X - offset), float64(e.Position.Y - offset), w + offset, h + offset}.ToImageRect()
+	rect2 := obj.GetBoundingRect().ToImageRect()
+	return rect1.Overlaps(rect2)
+}
+
 func (e *Entity) Draw(screen *ebiten.Image) {
 	// if object is hidden do not draw
 	if e.IsHidden {
