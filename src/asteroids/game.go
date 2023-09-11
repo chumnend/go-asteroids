@@ -37,12 +37,20 @@ import (
 // 1) SETTINGS =======================================================================================
 
 const (
-	GAME_WIDTH    = 300 // internal game width
-	GAME_HEIGHT   = 300 // internal game height
-	SCALE         = 2   // factor to scale for desktop
-	WINDOW_WIDTH  = GAME_WIDTH * SCALE
-	WINDOW_HEIGHT = GAME_HEIGHT * SCALE
-	DT            = 1 / 60.0 // assume the delta is fixed and we are always at 60 FPS
+	GAME_WIDTH        = 300 // internal game width
+	GAME_HEIGHT       = 300 // internal game height
+	SCALE             = 2   // factor to scale for desktop
+	WINDOW_WIDTH      = GAME_WIDTH * SCALE
+	WINDOW_HEIGHT     = GAME_HEIGHT * SCALE
+	DT                = 1 / 60.0 // assume the delta is fixed and we are always at 60 FPS
+	DPI               = 72
+	FONT_SIZE         = 8
+	AUDIO_SAMPLE_RATE = 48000
+)
+
+var (
+	MENU_BG_COLOR = color.RGBA{72, 170, 182, 200}
+	TEXT_COLOR    = color.RGBA{34, 32, 32, 255}
 )
 
 type GameState int
@@ -59,13 +67,6 @@ const (
 	MenuStatePause
 	MenuStateGameOver
 	MenuStateWin
-)
-
-var (
-	DPI           = 72
-	FONT_SIZE     = 8
-	MENU_BG_COLOR = color.RGBA{72, 170, 182, 200}
-	TEXT_COLOR    = color.RGBA{34, 32, 32, 255}
 )
 
 type textItem struct {
@@ -104,8 +105,9 @@ type Game struct {
 	ship        *Ship
 	asteroids   Asteroids
 	bullets     Bullets
-	font        font.Face
 	showDebug   bool
+
+	font font.Face
 }
 
 // NewGame returns a Game struct, the width of the window and the height of the window
