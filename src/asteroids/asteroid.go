@@ -9,7 +9,7 @@ import (
 const (
 	NUMBER_OF_ASTEROIDS = 5
 	ASTEROID_INITIAL_VX = 1
-	ASTEROID_INITIAL_VY = -1
+	ASTEROID_INITIAL_VY = 1
 )
 
 type Asteroid struct {
@@ -57,8 +57,20 @@ func (asteroid *Asteroid) Destroy() {
 func (asteroid *Asteroid) Initialize() {
 	asteroid.IsHidden = false
 	asteroid.GetRandomPosition()
-	asteroid.Velocity.X = ASTEROID_INITIAL_VX
-	asteroid.Velocity.Y = ASTEROID_INITIAL_VY
+
+	xSign := rand.Intn(2)
+	if xSign == 1 {
+		asteroid.Velocity.X = ASTEROID_INITIAL_VX
+	} else {
+		asteroid.Velocity.X = -1 * ASTEROID_INITIAL_VX
+	}
+
+	ySign := rand.Intn(2)
+	if ySign == 1 {
+		asteroid.Velocity.Y = ASTEROID_INITIAL_VY
+	} else {
+		asteroid.Velocity.Y = -1 * ASTEROID_INITIAL_VY
+	}
 }
 
 func (asteroid *Asteroid) Update() {
