@@ -37,7 +37,7 @@ func (e *Entity) CollidesWith(obj *Entity) bool {
 func (e *Entity) CollidesWithOffset(obj *Entity, offset float64) bool {
 	w := e.Sprite.GetSize().X
 	h := e.Sprite.GetSize().Y
-	rect1 := Rectangle{float64(e.Position.X - offset), float64(e.Position.Y - offset), w + offset, h + offset}.ToImageRect()
+	rect1 := Rectangle{float64(e.Position.X) - offset, float64(e.Position.Y) - offset, w + offset, h + offset}.ToImageRect()
 	rect2 := obj.GetBoundingRect().ToImageRect()
 	return rect1.Overlaps(rect2)
 }
