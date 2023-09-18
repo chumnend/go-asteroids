@@ -1,10 +1,10 @@
-# Asteroids (A Go Clone)
+# Asteroids w/ Go
 
 ## About the Project
-An Asteroids clone made with Go.
+An Asteroids clone made with Go and Ebitengine.
 
 ### Demo 
-TBD
+![Go Asteroids](./go-asteroids-capture-1.gif)
 
 ### Built With
 - [Golang](https://go.dev/) 1.20.4
