@@ -4,7 +4,7 @@
 An Asteroids clone made with Go and Ebitengine.
 
 ### Demo 
-![Go Asteroids](./go-asteroids-capture-1.gif)
+![Go Asteroids](./go-asteroids-capture.gif)
 
 ### Built With
 - [Golang](https://go.dev/) 1.20.4
