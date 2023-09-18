@@ -6,6 +6,7 @@ import (
 	"image/color"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/audio"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 	"github.com/hajimehoshi/ebiten/v2/examples/resources/fonts"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
@@ -99,15 +100,16 @@ var wonTexts = []textItem{
 
 // Game implements the ebiten.Game interface
 type Game struct {
-	gameState   GameState
-	menuState   MenuState
-	pressedKeys []ebiten.Key
-	ship        *Ship
-	asteroids   Asteroids
-	bullets     Bullets
-	showDebug   bool
-
-	font font.Face
+	gameState    GameState
+	menuState    MenuState
+	pressedKeys  []ebiten.Key
+	ship         *Ship
+	asteroids    Asteroids
+	bullets      Bullets
+	showDebug    bool
+	font         font.Face
+	audioContext *audio.Context
+	sounds       map[string]*Sound
 }
 
 // NewGame returns a Game struct, the width of the window and the height of the window
@@ -126,6 +128,23 @@ func NewGame() (*Game, int, int) {
 
 // Init loads all resources for the game
 func (game *Game) Init() error {
+	// load game sounds and music
+	game.audioContext = audio.NewContext(AUDIO_SAMPLE_RATE)
+
+	game.sounds = make(map[string]*Sound)
+	for _, soundName := range []string{
+		"bullet_1",
+		"destroy_1",
+		"game_over_1",
+		"start_1",
+	} {
+		s, err := NewSoundFromFile(game.audioContext, "src/assets/sfx/"+soundName+".wav")
+		if err != nil {
+			return err
+		}
+		game.sounds[soundName] = s
+	}
+
 	// load the font type
 	tt, err := opentype.Parse(fonts.PressStart2P_ttf)
 	if err != nil {
@@ -162,6 +181,16 @@ func (game *Game) Init() error {
 	}
 	game.bullets = bullets
 
+	return nil
+}
+
+// Exit closes any resources that need to be closed
+func (game *Game) Exit() error {
+	for _, sound := range game.sounds {
+		if err := sound.Close(); err != nil {
+			return err
+		}
+	}
 	return nil
 }
 
@@ -230,6 +259,7 @@ func (game *Game) handleInput() error {
 		case MenuStateMain:
 			if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
 				game.startGame()
+				game.playSound("start_1")
 			}
 		case MenuStatePause:
 			if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
@@ -253,6 +283,7 @@ func (game *Game) handleInput() error {
 
 		if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
 			game.bullets.Shoot(game.ship)
+			game.playSound("bullet_1")
 		}
 
 		for _, key := range game.pressedKeys {
@@ -304,12 +335,14 @@ func (game *Game) restartGame() {
 func (game *Game) winGame() {
 	game.gameState = GameStateMenu
 	game.menuState = MenuStateWin
+	game.playSound("game_over_1")
 }
 
 // loseGame sets the game state to "menu" and shows the "game over" menu
 func (game *Game) loseGame() {
 	game.gameState = GameStateMenu
 	game.menuState = MenuStateGameOver
+	game.playSound("game_over_1")
 }
 
 // 4) PROCESS =============================================================================
@@ -322,6 +355,7 @@ func (game *Game) checkCollisions() {
 			if asteroid.CollidesWith(&bullet.Entity) {
 				bullet.Initialize() // reset the bullet
 				asteroid.Destroy()  // remove the asteroid
+				game.playSound("destroy_1")
 			}
 		}
 	}
@@ -373,6 +407,13 @@ func (game *Game) processLogic() error {
 	}
 
 	return nil
+}
+
+// playSound plays an audio file loaded by the game
+func (game *Game) playSound(soundName string) {
+	if sound, ok := game.sounds[soundName]; ok {
+		sound.Play()
+	}
 }
 
 // 5) PAINT  ===================================================================================
