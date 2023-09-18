@@ -1,4 +1,4 @@
-# Asteroids w/ Go
+# GO Asteroids
 
 ## About the Project
 An Asteroids clone made with Go and Ebitengine.
